@@ -1,0 +1,6 @@
+
+data-update-service/gradle/wrapper/
+
+*.bat
+
+data-update-service/gradlew
