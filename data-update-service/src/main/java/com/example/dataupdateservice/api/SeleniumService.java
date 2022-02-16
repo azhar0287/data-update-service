@@ -83,7 +83,7 @@ public class SeleniumService {
         String response  = this.doLogin();
         if(response.equalsIgnoreCase("FirsTox")) {
             LOGGER.info("Logged in Successfully ");
-            //driver.get("https://firstox.stratusdx.net/patient/edit.aspx");
+
             WebDriverWait wait = new WebDriverWait(driver, 60);// 1 minute
             wait.until(ExpectedConditions.visibilityOfElementLocated(new By.ByLinkText("New Patient")));
             WebElement newPage = driver.findElement(By.linkText("New Patient"));
@@ -94,29 +94,34 @@ public class SeleniumService {
 
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_txtFirstName")));
             WebElement firstName  = driver.findElement(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_txtFirstName"));
+            firstName.sendKeys(mapper.getFirstName());
 
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_txtLastName")));
             WebElement lastName  = driver.findElement(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_txtLastName"));
-
+            lastName.sendKeys(mapper.getLastName());
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.name("ctl00$ctl00$ctl00$cphDefault$cphTemplate$cphTemplate$patientDetail$ddlGender$ddlObj")));
             Select dropdown = new Select(driver.findElement(By.name("ctl00$ctl00$ctl00$cphDefault$cphTemplate$cphTemplate$patientDetail$ddlGender$ddlObj")));
             dropdown.selectByIndex(1);
 
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_txtAddressZip")));
             driver.findElement(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_txtAddressZip")).click();
             driver.findElement(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_txtAddressZip")).sendKeys(mapper.getZipCode());
 
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_txtAddressStreet")));
             driver.findElement(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_txtAddressStreet")).click();
             driver.findElement(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_txtAddressStreet")).sendKeys(mapper.getStreet());
 
-            wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_txtAddressStreet")));
-
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_txtHomePhone")));
             driver.findElement(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_txtHomePhone")).click();
             driver.findElement(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_txtHomePhone")).sendKeys(mapper.getMobileNumber());
 
-            Select race = new Select(driver.findElement(By.name("ctl00$ctl00$ctl00$cphDefault$cphTemplate$cphTemplate$patientDetail$ddlRace$ddlObj")));
-            race.selectByIndex(7);
-
-            Select ethnicity = new Select(driver.findElement(By.name("ctl00$ctl00$ctl00$cphDefault$cphTemplate$cphTemplate$patientDetail$ddlEthnicity$ddlObj")));
-            ethnicity.selectByIndex(3);
+//            wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("ctl00$ctl00$ctl00$cphDefault$cphTemplate$cphTemplate$patientDetail$ddlRace$ddlObj")));
+//            Select race = new Select(driver.findElement(By.name("ctl00$ctl00$ctl00$cphDefault$cphTemplate$cphTemplate$patientDetail$ddlRace$ddlObj")));
+//            race.selectByIndex(7);
+//
+//            wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("ctl00$ctl00$ctl00$cphDefault$cphTemplate$cphTemplate$patientDetail$ddlEthnicity$ddlObj")));
+//            Select ethnicity = new Select(driver.findElement(By.name("ctl00$ctl00$ctl00$cphDefault$cphTemplate$cphTemplate$patientDetail$ddlEthnicity$ddlObj")));
+//            ethnicity.selectByIndex(3);
 
             driver.findElement(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_txtEmailAddress")).click();
             driver.findElement(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_txtEmailAddress")).sendKeys(mapper.getEmail());
@@ -128,18 +133,10 @@ public class SeleniumService {
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("cphDefault_cphTemplate_cphTemplate_btnSave")));
 
             organization.sendKeys("Sethi Labs Dallas");
+            firstName.sendKeys(mapper.getFirstName());
+            lastName.sendKeys(mapper.getLastName());
 
 
-//            firstName.sendKeys(mapper.getFirstName());
-//            lastName.sendKeys(mapper.getLastName());
-
-
-            String date = mapper.getDob().format(DateTimeFormatter.ofPattern("DD/MM/YYYY"));
-            LOGGER.info("Dob "+date);
-           // dob.sendKeys(date);
-            //city.sendKeys(mapper.getCity());
-
-            //state.sendKeys(mapper.getState());
 
           // street.sendKeys(mapper.getStreet());
 
