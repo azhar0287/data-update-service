@@ -84,7 +84,7 @@ public class SeleniumService {
         if(response.equalsIgnoreCase("FirsTox")) {
             LOGGER.info("Logged in Successfully ");
 
-            WebDriverWait wait = new WebDriverWait(driver, 60);// 1 minute
+            WebDriverWait wait = new WebDriverWait(driver, 120);// 1 minute
             wait.until(ExpectedConditions.visibilityOfElementLocated(new By.ByLinkText("New Patient")));
             WebElement newPage = driver.findElement(By.linkText("New Patient"));
             newPage.click();
@@ -116,19 +116,20 @@ public class SeleniumService {
             driver.findElement(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_txtHomePhone")).click();
             driver.findElement(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_txtHomePhone")).sendKeys(mapper.getMobileNumber());
 
-//            wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("ctl00$ctl00$ctl00$cphDefault$cphTemplate$cphTemplate$patientDetail$ddlRace$ddlObj")));
-//            Select race = new Select(driver.findElement(By.name("ctl00$ctl00$ctl00$cphDefault$cphTemplate$cphTemplate$patientDetail$ddlRace$ddlObj")));
-//            race.selectByIndex(7);
-//
-//            wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("ctl00$ctl00$ctl00$cphDefault$cphTemplate$cphTemplate$patientDetail$ddlEthnicity$ddlObj")));
-//            Select ethnicity = new Select(driver.findElement(By.name("ctl00$ctl00$ctl00$cphDefault$cphTemplate$cphTemplate$patientDetail$ddlEthnicity$ddlObj")));
-//            ethnicity.selectByIndex(3);
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.name("ctl00$ctl00$ctl00$cphDefault$cphTemplate$cphTemplate$patientDetail$ddlEthnicity$ddlObj")));
+            Select race = new Select(driver.findElement(By.name("ctl00$ctl00$ctl00$cphDefault$cphTemplate$cphTemplate$patientDetail$ddlRace$ddlObj")));
+            race.selectByIndex(7);
+
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.name("ctl00$ctl00$ctl00$cphDefault$cphTemplate$cphTemplate$patientDetail$ddlEthnicity$ddlObj")));
+            Select ethnicity = new Select(driver.findElement(By.name("ctl00$ctl00$ctl00$cphDefault$cphTemplate$cphTemplate$patientDetail$ddlEthnicity$ddlObj")));
+            ethnicity.selectByIndex(3);
 
             driver.findElement(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_txtEmailAddress")).click();
             driver.findElement(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_txtEmailAddress")).sendKeys(mapper.getEmail());
 
-            WebElement dob  = driver.findElement(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_txtDOB"));
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_txtDOB")));
+            WebElement dob  = driver.findElement(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_txtDOB"));
+            dob.sendKeys(mapper.getDob().format(DateTimeFormatter.ofPattern("MM/DD/YYYY")));
 
             WebElement updatePatientButton  = driver.findElement(By.id("cphDefault_cphTemplate_cphTemplate_btnSave"));
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("cphDefault_cphTemplate_cphTemplate_btnSave")));
@@ -143,7 +144,6 @@ public class SeleniumService {
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_ddlLocation_ddlObj")));
             driver.findElement(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_ddlLocation_ddlObj"));
             driver.findElement(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_ddlLocation_ddlObj")).sendKeys("Sethi Labs Dallas");
-
 
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_ddlLocation_ddlObj")));
             driver.findElement(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_ddlLocation_ddlObj"));
@@ -161,12 +161,10 @@ public class SeleniumService {
             driver.findElement(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_ddlPhysician_ddlObj")).sendKeys("McCoy, APRN Sandra");
 
 
-//            wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_ddlPhysician_ddlObj")));
-//            WebElement provider  = driver.findElement(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_ddlPhysician_ddlObj"));
 //
 
 
-           // updatePatientButton.click();
+           updatePatientButton.click();
 
 
             LOGGER.info("update patient button clicked");
