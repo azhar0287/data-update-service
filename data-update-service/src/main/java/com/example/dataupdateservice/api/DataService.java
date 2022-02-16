@@ -5,39 +5,26 @@ import com.example.dataupdateservice.insuranceform.InsuranceForm;
 
 import com.example.dataupdateservice.insuranceform.InsuranceFormRepository;
 import com.example.dataupdateservice.mappers.*;
+import com.example.dataupdateservice.order.OrderMapper;
 import com.example.dataupdateservice.response.DefaultResponse;
 import com.example.dataupdateservice.user.User;
 import com.example.dataupdateservice.user.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import feign.Response;
-import io.cucumber.java.an.E;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import org.apache.http.Header;
-import org.apache.http.impl.client.HttpClients;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.ClientHttpRequestFactory;
-import org.springframework.http.client.ClientHttpResponse;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.ResourceHttpMessageConverter;
-import org.springframework.http.converter.StringHttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import java.nio.charset.StandardCharsets;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+
 
 @Service
 public class DataService {
@@ -59,18 +46,24 @@ public class DataService {
     String user;
 
 
+    String mode = "save";
+    String ordnum = "NEW";
+    String outputformat = "JSON";
+    String housecall = "NO";
+    String patid = "NEW";
+
     public ResponseEntity addFormData(InsuranceFormMapper mapper) {
         try {
             InsuranceForm insuranceForm = this.mapFormData(mapper);
-            seleniumService.processForm(mapper);
+//            seleniumService.processForm(mapper);
 
-//            String patId = this.sendDataToMarques(mapper);
-//            if(patId != null) {
-//                insuranceForm.setPatientId(patId);
-//                insuranceFormRepository.save(insuranceForm);
-//                LOGGER.info("Patient Data has saved "+patId);
-//            }
-//            LOGGER.info("Data does not save");
+            String patId = this.sendDataToMarques(mapper);
+            if(patId != null) {
+                insuranceForm.setPatientId(patId);
+                insuranceFormRepository.save(insuranceForm);
+                LOGGER.info("Patient Data has saved "+patId);
+            }
+            LOGGER.info("Data does not save");
 
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
@@ -126,44 +119,81 @@ public class DataService {
             return new ResponseEntity<>(new DefaultResponse("Failure", "User does not exists", "F01"), HttpStatus.OK);
         }
     }
+
     public String sendDataToMarques(InsuranceFormMapper insuranceFormMapper) {
         PatientResponseMapper patientResponseMapper = null;
+        String newPatientId = null;
         try {
            PatientMapper patientMapper = this.mapPatientObject(insuranceFormMapper);
            ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
            String json = ow.writeValueAsString(patientMapper);
+           newPatientId = this.createPatient(json);
+           LOGGER.info("New Patient Id is "+newPatientId);
 
-           String mode = "save";
-           String ordnum = "NEW";
-           String outputformat = "JSON";
-           String housecall = "NO";
-           String patid = "NEW";
 
-//           String response = feignClientService.postPatient(this.user, mode, ordnum, housecall, patid, outputformat, json);
-//           patientResponseMapper = new ObjectMapper().readValue(response, PatientResponseMapper.class);
-//           LOGGER.info("Response "+response);
-//           if(patientResponseMapper.getSuccess().equalsIgnoreCase("false") && patientResponseMapper.getMsg().equalsIgnoreCase("Duplicate")){
-            CommentFormDto commentFormDto = new CommentFormDto(mode, patid, this.user, json, outputformat);
-            Map<String, String> form = new HashMap<>();
+        }
+        catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+        return newPatientId;
+    }
 
-            form.put("mode", mode);
-            form.put("patid",patid);
-            form.put("user",this.user);
-            form.put("json", json);
-            form.put("outputformat",outputformat);
+    String createPatient(String json) {
+        String newPatientId = null;
+        try {
+            PatientResponseMapper patientResponseMapper;
 
-          String response =  feignClientService.postDuplicatePatient(form);
-                LOGGER.info("Response ");
+            String response = feignClientService.postPatient(this.user, mode, ordnum, housecall, patid, outputformat, json);
+            patientResponseMapper = new ObjectMapper().readValue(response, PatientResponseMapper.class);
+            LOGGER.info("Response "+response);
 
-           // patientResponseMapper = new ObjectMapper().readValue(finalResponse, PatientResponseMapper.class);
-     //       }
-//            else {
-//                patientResponseMapper.getPatid();
-//            }
+            if(patientResponseMapper.getSuccess().equalsIgnoreCase("false") && patientResponseMapper.getMsg().equalsIgnoreCase("Duplicate")) {
+                LOGGER.info("Patient Entry is Duplicate");
+                HttpHeaders headers = new HttpHeaders();
+                headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+                MultiValueMap<String, String> map= new LinkedMultiValueMap<String, String>();
+                map.add("mode", mode);
+                map.add("patid",patid);
+                map.add("user", this.user);
+                map.add("json", json);
+                map.add("outputformat", outputformat);
+
+                HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
+                RestTemplate restTemplate = new RestTemplate();
+                ResponseEntity<String> finalResponse = restTemplate.postForEntity( "https://marquis.labsvc.net/ordpatins.cgi?FORCE", request , String.class );
+                LOGGER.info("Res "+response);
+                patientResponseMapper = new ObjectMapper().readValue(finalResponse.getBody(), PatientResponseMapper.class);
+                if(patientResponseMapper.getSuccess().equalsIgnoreCase("true") && patientResponseMapper.getMsg().equalsIgnoreCase("OK")) {
+                    newPatientId = patientResponseMapper.getPatid();
+                }
+            }
+            else {
+                if(patientResponseMapper.getSuccess().equalsIgnoreCase("true") && patientResponseMapper.getMsg().equalsIgnoreCase("OK")) {
+                    newPatientId = patientResponseMapper.getPatid();
+                }
+            }
+
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
-        return patientResponseMapper.getPatid();
+        return newPatientId;
+    }
+
+    public void sendOrderWithPatient(String json, String patid) {
+        try{
+            MultiValueMap<String, String> map= new LinkedMultiValueMap<String, String>();
+            map.add("mode", mode);
+            map.add("patid",patid);
+            map.add("user", this.user);
+            map.add("json", json);
+            map.add("outputformat", outputformat);
+            map.add("patid", patid);
+            map.add("housecall", "NO");
+
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+
     }
 
     public PatientMapper mapPatientObject(InsuranceFormMapper insuranceFormMapper) {
@@ -184,5 +214,24 @@ public class DataService {
         return patientMapper;
     }
 
+   void mapOrderObject(InsuranceFormMapper mapper){
+        try {
+            OrderMapper order = new OrderMapper();
+            order.setUser(this.user);
+            order.setNewpat("NO");
+            order.setIlname(mapper.getLastName());
+            order.setIfname(mapper.getFirstName());
+            String gender = mapper.getGender();
+            if(gender.equalsIgnoreCase("MALE")) {
+                order.setIsex("M");
+            }
+            if(gender.equalsIgnoreCase("FEMALE")) {
+                order.setIsex("F");
+            }
+
+        } catch (Exception e) {
+            LOGGER.info(e.getMessage(), e);
+        }
+   }
 
 }

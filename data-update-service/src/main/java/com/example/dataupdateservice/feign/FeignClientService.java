@@ -27,8 +27,7 @@ public interface FeignClientService {
 
 
     @PostMapping(value="/ordpatins.cgi?FORCE", produces = MediaType.TEXT_PLAIN_VALUE, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-    @Headers("Content-Type: application/x-www-form-urlencoded")
-    String postDuplicatePatient(@RequestParam Map<String, ?> form);
+    String postDuplicatePatient(@RequestBody Map<String, String> body);
 
 
 
