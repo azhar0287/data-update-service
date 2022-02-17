@@ -29,6 +29,17 @@ public interface FeignClientService {
     @PostMapping(value="/ordpatins.cgi?FORCE", produces = MediaType.TEXT_PLAIN_VALUE, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     String postDuplicatePatient(@RequestBody Map<String, String> body);
 
+    @PostMapping(value="/ordpatins.cgi", produces = MediaType.TEXT_PLAIN_VALUE)
+    @ResponseBody
+    String saveSignature(@RequestParam("mode") String mode,
+                         @RequestParam("ordnum") String ordnum,
+                         @RequestParam("outputformat") String outputformat,
+                         @RequestParam("_dc") String _dc,
+                         @RequestParam("sessionkey") String sessionkey,
+                         @RequestParam("signature") String signature);
+
+
+
 
 
 //    @RequestMapping(method = RequestMethod.POST, value="/services/rest/record/v1/invoice")

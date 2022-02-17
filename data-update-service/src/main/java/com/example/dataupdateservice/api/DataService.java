@@ -35,12 +35,12 @@ public class DataService {
     UserRepository userRepository;
     @Autowired
     InsuranceFormRepository insuranceFormRepository;
-
     @Autowired
     FeignClientService feignClientService;
-
     @Autowired
     SeleniumService seleniumService;
+    @Autowired
+    OrderCreateService orderCreateService;
 
     @Value("${userToken}")
     String user;
@@ -129,7 +129,17 @@ public class DataService {
            String json = ow.writeValueAsString(patientMapper);
            newPatientId = this.createPatient(json);
            LOGGER.info("New Patient Id is "+newPatientId);
-
+          if(orderCreateService.processOrderSpec(newPatientId, insuranceFormMapper)) {
+               LOGGER.info("Order spec has created......!");
+               String orderNumber = orderCreateService.processOrderTestSrc(newPatientId, insuranceFormMapper);
+               LOGGER.info("Order number (Newly created): "+orderNumber);
+               if(orderCreateService.processOrderDiagnosisCode(newPatientId, orderNumber)) {
+                   LOGGER.info("Diagnoses data has also mapped now in order# "+orderNumber);
+                    feignClientService.saveSignature("savesignature", orderNumber, "JSON", "1645046790500", this.user, "AA");
+                    String pdfUrl = "https://marquis.labsvc.net/webreq.cgi?HBHEHHHGHEHMHOBHBGBMAOAOGEHDGIGHGG"+orderNumber+"+noabn+"+newPatientId;
+                    LOGGER.info("Prdf Url "+pdfUrl);
+               }
+          }
 
         }
         catch (Exception e) {
@@ -203,7 +213,7 @@ public class DataService {
             patientMapper.setLastn(insuranceFormMapper.getLastName());
             patientMapper.setCity(insuranceFormMapper.getCity());
             patientMapper.setZip(insuranceFormMapper.getZipCode());
-            String date = insuranceFormMapper.getDob().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+            String date = insuranceFormMapper.getDob().format(DateTimeFormatter.ofPattern("MM/dd/YYYY"));
             LOGGER.info("Date converted "+date);
             patientMapper.setDob(date);
             patientMapper.setSex(insuranceFormMapper.getGender());

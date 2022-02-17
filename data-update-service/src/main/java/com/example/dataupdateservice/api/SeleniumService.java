@@ -129,7 +129,7 @@ public class SeleniumService {
 
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_txtDOB")));
             WebElement dob  = driver.findElement(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_txtDOB"));
-            dob.sendKeys(mapper.getDob().format(DateTimeFormatter.ofPattern("MM/DD/YYYY")));
+            dob.sendKeys(mapper.getDob().format(DateTimeFormatter.ofPattern("MM/dd/YYYY")));
 
             WebElement updatePatientButton  = driver.findElement(By.id("cphDefault_cphTemplate_cphTemplate_btnSave"));
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("cphDefault_cphTemplate_cphTemplate_btnSave")));

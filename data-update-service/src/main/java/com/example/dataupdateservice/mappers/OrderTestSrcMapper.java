@@ -1,14 +1,15 @@
 package com.example.dataupdateservice.mappers;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.validator.constraints.SafeHtml;
 
 @Getter @Setter @NoArgsConstructor
-public class PatientResponseMapper {
-    private String success;
+public class OrderTestSrcMapper {
+
+    @JsonProperty("success")
+    private Boolean success;
     private String msg;
-    private String patid;
     private String ordnum;
 }
