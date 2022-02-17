@@ -36,6 +36,7 @@ public class InsuranceForm {
     private String street;
     private String optionalMobile;
     private String patientId;
+    private String orderNumber;
 
     @Lob
     @Basic(fetch = FetchType.EAGER)

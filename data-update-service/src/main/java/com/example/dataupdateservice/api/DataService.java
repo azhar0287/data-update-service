@@ -44,31 +44,35 @@ public class DataService {
 
     @Value("${userToken}")
     String user;
-
-
     String mode = "save";
     String ordnum = "NEW";
     String outputformat = "JSON";
     String housecall = "NO";
     String patid = "NEW";
-
+    String pdfUrl ="";
+    
     public ResponseEntity addFormData(InsuranceFormMapper mapper) {
+        OrderResponse orderResponse = null;
         try {
             InsuranceForm insuranceForm = this.mapFormData(mapper);
 //            seleniumService.processForm(mapper);
 
-            String patId = this.sendDataToMarques(mapper);
-            if(patId != null) {
-                insuranceForm.setPatientId(patId);
+            orderResponse = this.sendDataToMarques(mapper);
+            String patientId = orderResponse.getPatientId();
+            if(patientId != null) {
+                insuranceForm.setPatientId(patientId);
+                insuranceForm.setOrderNumber(orderResponse.getOrderNumber());
                 insuranceFormRepository.save(insuranceForm);
-                LOGGER.info("Patient Data has saved "+patId);
+                LOGGER.info("Patient Data has saved "+patientId);
             }
-            LOGGER.info("Data does not save");
-
+            else {
+                LOGGER.info("Data does not save");
+            }
+            
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
-        return new ResponseEntity<>(new DefaultResponse("Success", "Form Data has save successfully", "S01"), HttpStatus.OK);
+        return new ResponseEntity<>(new DefaultResponse("Success", "Form Data has save successfully", orderResponse.getPdfUrl()), HttpStatus.OK);
     }
 
     public InsuranceForm mapFormData(InsuranceFormMapper mapper) {
@@ -120,8 +124,8 @@ public class DataService {
         }
     }
 
-    public String sendDataToMarques(InsuranceFormMapper insuranceFormMapper) {
-        PatientResponseMapper patientResponseMapper = null;
+    public OrderResponse sendDataToMarques(InsuranceFormMapper insuranceFormMapper) {
+        OrderResponse orderResponse = new OrderResponse();
         String newPatientId = null;
         try {
            PatientMapper patientMapper = this.mapPatientObject(insuranceFormMapper);
@@ -129,6 +133,7 @@ public class DataService {
            String json = ow.writeValueAsString(patientMapper);
            newPatientId = this.createPatient(json);
            LOGGER.info("New Patient Id is "+newPatientId);
+           
           if(orderCreateService.processOrderSpec(newPatientId, insuranceFormMapper)) {
                LOGGER.info("Order spec has created......!");
                String orderNumber = orderCreateService.processOrderTestSrc(newPatientId, insuranceFormMapper);
@@ -136,8 +141,10 @@ public class DataService {
                if(orderCreateService.processOrderDiagnosisCode(newPatientId, orderNumber)) {
                    LOGGER.info("Diagnoses data has also mapped now in order# "+orderNumber);
                     feignClientService.saveSignature("savesignature", orderNumber, "JSON", "1645046790500", this.user, "AA");
-                    String pdfUrl = "https://marquis.labsvc.net/webreq.cgi?HBHEHHHGHEHMHOBHBGBMAOAOGEHDGIGHGG"+orderNumber+"+noabn+"+newPatientId;
-                    LOGGER.info("Prdf Url "+pdfUrl);
+                    String pdfUrl = "https://marquis.labsvc.net/webreq.cgi?HBHEHHHGHEHMHOBHBGBMAOAOGEHDGIGHGG+"+orderNumber+"+noabn+"+newPatientId;
+                    orderResponse.setPdfUrl(pdfUrl);
+                    orderResponse.setOrderNumber(orderNumber);
+                    orderResponse.setPatientId(newPatientId);
                }
           }
 
@@ -145,7 +152,7 @@ public class DataService {
         catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
-        return newPatientId;
+        return orderResponse;
     }
 
     String createPatient(String json) {
@@ -188,24 +195,7 @@ public class DataService {
         }
         return newPatientId;
     }
-
-    public void sendOrderWithPatient(String json, String patid) {
-        try{
-            MultiValueMap<String, String> map= new LinkedMultiValueMap<String, String>();
-            map.add("mode", mode);
-            map.add("patid",patid);
-            map.add("user", this.user);
-            map.add("json", json);
-            map.add("outputformat", outputformat);
-            map.add("patid", patid);
-            map.add("housecall", "NO");
-
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
-        }
-
-    }
-
+    
     public PatientMapper mapPatientObject(InsuranceFormMapper insuranceFormMapper) {
         PatientMapper patientMapper = new PatientMapper();
         try {
