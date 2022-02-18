@@ -30,12 +30,13 @@ public class OrderCreateService {
     public static String ORDER_SPEC_URL = "https://marquis.labsvc.net/ordspec.cgi";
     public static String ORDER_TEST_SRC = "https://marquis.labsvc.net/ordtestscr.cgi";
     public static String ORDER_SAVE_TEST_URL = "https://marquis.labsvc.net/ordsave.cgi";
+    //public static String ORDER_SAVE_TEST_URL = "https://marquis.labsvc.net/ordtestscr.cgi";
+
     public static String ORDER_SAVE_DIAG_URL = "https://marquis.labsvc.net/ordsave.cgi";
     public static String ORDER_SAVE_SIGNATURE = "https://marquis.labsvc.net/ordsave.cgi";
 
     @Value("${userToken}")
     String user;
-
 
     public String getMappedInsuranceToOrder(InsuranceFormMapper mapper) throws JsonProcessingException {
         OrderMapper order = new OrderMapper();
@@ -74,15 +75,12 @@ public class OrderCreateService {
             diagnoseMapper.setCltnum("1551");
             diagnoseMapper.setDiag1("Z20.828");
             diagnoseMapper.setDiag2("R05.9");
-
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
-
         ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
         return ow.writeValueAsString(diagnoseMapper);
     }
-
 
     public String getCurrentDate() {
         String dateString = "";
@@ -96,6 +94,7 @@ public class OrderCreateService {
         }
         return dateString;
     }
+
     public String getCurrentTime() {
         String timeString = "";
         try {
@@ -124,6 +123,49 @@ public class OrderCreateService {
         }
         return response;
     }
+
+    boolean processOrderSaveTest(String patientId, String orderNumber, InsuranceFormMapper mapper) {
+        try {
+            MultiValueMap<String, String> map= new LinkedMultiValueMap<>();
+            map.add("billtype", "4051");
+            map.add("ordphys", "1588");
+            map.add("ordclt", "1551");
+            map.add("orderdate", "02/17/2022");
+            map.add("user", "HBHEHGHHHFHOHGBHBGBMAOAOGEHDGIGHGG");
+            map.add("patid", patientId);
+            map.add("collectdt", "02/16/2022");
+            map.add("fasting", "N");
+            map.add("json", "{\"tests\":[\"PCRW\"],\"frequency\":[\"One Time\"],\"startdt\":[\"02/18/2022\"],\"stopdt\":[\"02/18/2022\"]}");
+            map.add("mode", "savetest");
+            map.add("collecttime", "15:15");
+            map.add("ordertime", "15:18");
+            map.add("ordnum", orderNumber);
+            map.add("ordquest_webid","NOTSET");
+            map.add("housecall","NO");
+            map.add("outputformat","JSON");
+            map.add("testcode","PCRW");
+            map.add("call","N");
+            map.add("fax","N");
+            map.add("source","----");
+
+            String response = sendRequestByRestTemplate(map, ORDER_SAVE_TEST_URL);
+            if(response != "") {
+                PatientResponseMapper responseMapper = new ObjectMapper().readValue(response, PatientResponseMapper.class);
+                if(responseMapper.getSuccess().equalsIgnoreCase("true") && responseMapper.getMsg().equalsIgnoreCase("OK")) {
+                    return true;
+                }
+            }
+            else {
+                LOGGER.info("Order has not created");
+                return false;
+            }
+
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+        return false;
+    }
+
 
     boolean processOrderSpec(String patientId, InsuranceFormMapper mapper) {
         try {

@@ -138,13 +138,16 @@ public class DataService {
                LOGGER.info("Order spec has created......!");
                String orderNumber = orderCreateService.processOrderTestSrc(newPatientId, insuranceFormMapper);
                LOGGER.info("Order number (Newly created): "+orderNumber);
+               boolean result = orderCreateService.processOrderSaveTest(newPatientId, orderNumber, insuranceFormMapper);
+               LOGGER.info("Test save result"+ result);
                if(orderCreateService.processOrderDiagnosisCode(newPatientId, orderNumber)) {
                    LOGGER.info("Diagnoses data has also mapped now in order# "+orderNumber);
-                    feignClientService.saveSignature("savesignature", orderNumber, "JSON", "1645046790500", this.user, "AA");
+                    feignClientService.saveSignature("savesignature", orderNumber, "JSON", "1645046790500", this.user, "Abdul");
                     String pdfUrl = "https://marquis.labsvc.net/webreq.cgi?HBHEHHHGHEHMHOBHBGBMAOAOGEHDGIGHGG+"+orderNumber+"+noabn+"+newPatientId;
                     orderResponse.setPdfUrl(pdfUrl);
                     orderResponse.setOrderNumber(orderNumber);
                     orderResponse.setPatientId(newPatientId);
+                    LOGGER.info("Pdf url"+pdfUrl);
                }
           }
 
