@@ -49,13 +49,12 @@ public class DataService {
     String outputformat = "JSON";
     String housecall = "NO";
     String patid = "NEW";
-    String pdfUrl ="";
-    
+
     public ResponseEntity addFormData(InsuranceFormMapper mapper) {
         OrderResponse orderResponse = null;
         try {
             InsuranceForm insuranceForm = this.mapFormData(mapper);
-//            seleniumService.processForm(mapper);
+           // seleniumService.processForm(mapper);
 
             orderResponse = this.sendDataToMarques(mapper);
             String patientId = orderResponse.getPatientId();
@@ -72,7 +71,9 @@ public class DataService {
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
-        return new ResponseEntity<>(new DefaultResponse("Success", "Form Data has save successfully", orderResponse.getPdfUrl()), HttpStatus.OK);
+       // return new ResponseEntity<>(new DefaultResponse("Success", "Form Data has save successfully", orderResponse.getPdfUrl()), HttpStatus.OK);
+        return new ResponseEntity<>(new DefaultResponse("Success", "Form Data has save successfully", "Selenium Testing"), HttpStatus.OK);
+
     }
 
     public InsuranceForm mapFormData(InsuranceFormMapper mapper) {

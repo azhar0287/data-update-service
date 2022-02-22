@@ -88,7 +88,7 @@ public class OrderCreateService {
             LocalDate date = LocalDate.now(); // Gets the current date
             DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MM-dd-YYYY");
             dateString = date.format(dateFormatter);
-
+            LOGGER.info("Current date for order collection/etc: "+dateString);
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
@@ -130,10 +130,10 @@ public class OrderCreateService {
             map.add("billtype", "4051");
             map.add("ordphys", "1588");
             map.add("ordclt", "1551");
-            map.add("orderdate", "02/17/2022");
+            map.add("orderdate", this.getCurrentDate());
             map.add("user", "HBHEHGHHHFHOHGBHBGBMAOAOGEHDGIGHGG");
             map.add("patid", patientId);
-            map.add("collectdt", "02/16/2022");
+            map.add("collectdt", this.getCurrentDate());
             map.add("fasting", "N");
             map.add("json", "{\"tests\":[\"PCRW\"],\"frequency\":[\"One Time\"],\"startdt\":[\"02/18/2022\"],\"stopdt\":[\"02/18/2022\"]}");
             map.add("mode", "savetest");
@@ -147,7 +147,7 @@ public class OrderCreateService {
             map.add("call","N");
             map.add("fax","N");
             map.add("source","----");
-
+            map.add("comment",mapper.getEmail());
             String response = sendRequestByRestTemplate(map, ORDER_SAVE_TEST_URL);
             if(response != "") {
                 PatientResponseMapper responseMapper = new ObjectMapper().readValue(response, PatientResponseMapper.class);
@@ -174,8 +174,6 @@ public class OrderCreateService {
             map.add("patid", patientId);
             map.add("user", this.user);
             //map.add("json", json);
-            map.add("outputformat", "JSON");
-
             map.add("ordernum", "NEW");
             map.add("housecall", "NO");
             map.add("insname1", "COVID19 HRSA Uninsured Testing");
@@ -186,13 +184,13 @@ public class OrderCreateService {
             map.add("ilname", mapper.getLastName());
             map.add("idob", mapper.getDob().format(DateTimeFormatter.ofPattern("MM/dd/YYYY")));
             map.add("isex", this.getSexType(mapper.getGender()));
-            map.add("insid1", "JSON");
-            map.add("outputformat", "11111111"); //Insurance Policy
+            map.add("outputformat", "JSON");
+            map.add("insid1", "11111111"); //Insurance Policy
             map.add("iaddr1", mapper.getStreet());
             map.add("iaddr2", mapper.getStreet());
             map.add("istate", mapper.getState());
             map.add("izip", mapper.getZipCode());
-
+            map.add("relation","SE");
             String response = sendRequestByRestTemplate(map, ORDER_SPEC_URL);
             if(response != "") {
                 PatientResponseMapper responseMapper = new ObjectMapper().readValue(response, PatientResponseMapper.class);
@@ -231,7 +229,6 @@ public class OrderCreateService {
 
             String response = sendRequestByRestTemplate(map, ORDER_TEST_SRC);
             if(response != "") {
-
                 String[] parts = response.split("'");
                 if(parts[1].equalsIgnoreCase("OK")) {
                     ordNum = parts[3];
@@ -246,7 +243,6 @@ public class OrderCreateService {
         }
         return ordNum;
     }
-
 
     boolean processOrderDiagnosisCode(String patientId, String orderNumber) {
         try {
@@ -276,9 +272,6 @@ public class OrderCreateService {
         return false;
     }
 
-
-
-
     String getSexType(String sexType) {
         if(sexType.equalsIgnoreCase("MALE")) {
             return "M";
@@ -288,5 +281,4 @@ public class OrderCreateService {
         }
         return "M";
     }
-
 }
