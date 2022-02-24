@@ -1,6 +1,7 @@
 package com.example.dataupdateservice.api;
 
 import com.example.dataupdateservice.mappers.InsuranceFormMapper;
+import com.example.dataupdateservice.mappers.PrintDocLink;
 import io.github.bonigarcia.wdm.WebDriverManager;
 
 import org.apache.logging.log4j.LogManager;
@@ -12,6 +13,7 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +24,12 @@ import java.util.Random;
 @Service
 public class SeleniumService {
     private static final Logger LOGGER = LogManager.getLogger(SeleniumService.class);
+
+    @Autowired
+    DataService dataService;
+
+    @Autowired
+    OrderCreateService orderCreateService;
 
     @Value("${login.url}")
     String loginUrl;
@@ -77,8 +85,9 @@ public class SeleniumService {
         return driver.getTitle();
     }
 
-    public void processForm(InsuranceFormMapper mapper) throws InterruptedException {
+    public PrintDocLink processForm(InsuranceFormMapper mapper) throws InterruptedException {
         String response  = this.doLogin();
+        PrintDocLink printDocLink = new PrintDocLink();
         if(response.equalsIgnoreCase("FirsTox")) {
             LOGGER.info("Logged in Successfully ");
 
@@ -128,7 +137,7 @@ public class SeleniumService {
             Select race = new Select(driver.findElement(By.name("ctl00$ctl00$ctl00$cphDefault$cphTemplate$cphTemplate$patientDetail$ddlRace$ddlObj")));
             race.selectByIndex(7);
 
-            Thread.sleep(3000);
+            Thread.sleep(4000);
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.name("ctl00$ctl00$ctl00$cphDefault$cphTemplate$cphTemplate$patientDetail$ddlEthnicity$ddlObj")));
             Select ethnicity = new Select(driver.findElement(By.name("ctl00$ctl00$ctl00$cphDefault$cphTemplate$cphTemplate$patientDetail$ddlEthnicity$ddlObj")));
             ethnicity.selectByIndex(3);
@@ -161,8 +170,7 @@ public class SeleniumService {
             Thread.sleep(5000);
 
 
-            //driver.findElement(new By.ByXPath("//*[@id=frm1]/div[4]/div[1]/div[3]/div[3]")).click();
-
+            driver.findElement(new By.ByXPath("//*[@id='divPatientInsurance']/a/div[3]")).click();
 
             driver.findElement(By.className("addlink")).click();
 
@@ -178,11 +186,10 @@ public class SeleniumService {
             driver.findElement(By.className("searchlink")).click();
 
             Thread.sleep(3000);
-
-            WebElement iframe2 = driver.findElement(new By.ByXPath("//[@id='modalIframe']"));
+            WebElement iframe2 = driver.findElement(new By.ByXPath("//*[@id='modalIframe']"));
             driver.switchTo().frame(iframe2);
 
-            Thread.sleep(3000);
+            Thread.sleep(10000);
             driver.findElement(By.id("cphTemplate_insuranceplanlistView_gvSearch_txtSearch")).sendKeys("hrsa");
             driver.findElement(By.id("cphTemplate_insuranceplanlistView_gvSearch_txtSearch")).sendKeys(Keys.ENTER);
 
@@ -195,6 +202,8 @@ public class SeleniumService {
 
             Thread.sleep(5000);
             driver.switchTo().parentFrame();
+
+            Thread.sleep(10000);
             driver.findElement(By.className("addorderlink")).click();
 
             Thread.sleep(2000);
@@ -209,7 +218,7 @@ public class SeleniumService {
             driver.findElement(By.id("cphDefault_cphTemplate_laborderDetail_lnkAddDiagnosisCode")).click();
             Thread.sleep(3000);
 
-            WebElement iframe3 = driver.findElement (new By.ByXPath("//[@id='modalIframe']"));
+            WebElement iframe3 = driver.findElement (new By.ByXPath("//*[@id='modalIframe']"));
             driver.switchTo().frame(iframe3);
             Thread.sleep(1000);
 
@@ -220,31 +229,35 @@ public class SeleniumService {
             Thread.sleep(5000);
 
             driver.findElement(By.id("cphTemplate_btnClose")).click();
+
             Thread.sleep(3000);
-
             driver.switchTo().parentFrame();
-            driver.findElement((By.id("cphDefault_cphTemplate_laborderDetail_txtCollectionDateTime"))).sendKeys("02/18/2022 08:44 AM");
+            Thread.sleep(2000);
+            driver.findElement((By.id("cphDefault_cphTemplate_laborderDetail_txtCollectionDateTime"))).sendKeys(orderCreateService.getCurrentDate());
 
+            Thread.sleep(3000);
             driver.findElement(By.id("cphDefault_cphTemplate_laborderDetail_orderTests_gvOrderPanels_chkOrderTest_0")).click();
             driver.findElement(By.id("cphDefault_cphTemplate_laborderDetail_btnCreateOrder")).click();
-            Thread.sleep(3000);
 
-            WebElement iframe4 = driver.findElement(new By.ByXPath("//[@id='modalIframe']"));
-            driver.switchTo().frame(iframe4);
             Thread.sleep(5000);
+            WebElement iframe4 = driver.findElement(new By.ByXPath("//*[@id='modalIframe']"));
+            driver.switchTo().frame(iframe4);
 
-            WebElement iframe5 = driver.findElement(new By.ByXPath("//[@id='modalIframe']"));
-            driver.switchTo().frame(iframe5);
-            Thread.sleep(10000);
-
-            driver.findElement(By.id("Print Requisition")).click();
+            String pdfLink = driver.findElement(By.linkText("Print Requisition")).getAttribute("href");
+            LOGGER.info("Pdf Link "+pdfLink);
+            driver.findElement(By.id("cphTemplate_lnkPrintRequisition")).click();
             Thread.sleep(2000);
 
+            String labelLink = driver.findElement (By.linkText("Print Label")).getAttribute("href");
             driver.findElement (By.linkText("Print Label")).click();
-            LOGGER.info("update patient button clicked");
+
+
+            printDocLink.setFirstToxPdfLink(pdfLink);
+            printDocLink.setFirstToxLabelLink(labelLink);
+
+            LOGGER.info("FirstTox Form has submitted successfully");
             //driver.quit();
         }
-        System.out.println("Response"+ response);
+        return printDocLink;
     }
-
 }

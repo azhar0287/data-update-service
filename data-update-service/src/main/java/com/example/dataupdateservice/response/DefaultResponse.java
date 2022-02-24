@@ -1,9 +1,16 @@
 package com.example.dataupdateservice.response;
 
+import com.example.dataupdateservice.mappers.PrintDocLink;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter @Setter @NoArgsConstructor
 public class DefaultResponse {
     String responseIdentifier;
     String description;
     String responseCode;
+    PrintDocLink printDocLink;
 
 
     /*
@@ -15,33 +22,9 @@ public class DefaultResponse {
         this.responseCode = responseCode;
     }
 
-    public DefaultResponse(){}
-
-    public DefaultResponse(String responseIdentifier) {
+    public DefaultResponse(String responseIdentifier, String description, PrintDocLink printDocLink) {
         this.responseIdentifier = responseIdentifier;
-    }
-
-    public String getResponseIdentifier() {
-        return responseIdentifier;
-    }
-
-    public void setResponseIdentifier(String responseIdentifier) {
-        this.responseIdentifier = responseIdentifier;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
         this.description = description;
-    }
-
-    public String getResponseCode() {
-        return responseCode;
-    }
-
-    public void setResponseCode(String responseCode) {
-        this.responseCode = responseCode;
+        this.printDocLink = printDocLink;
     }
 }

@@ -52,9 +52,9 @@ public class DataService {
 
     public ResponseEntity addFormData(InsuranceFormMapper mapper) {
         OrderResponse orderResponse = null;
+        PrintDocLink printDocLink = new PrintDocLink();
         try {
             InsuranceForm insuranceForm = this.mapFormData(mapper);
-           // seleniumService.processForm(mapper);
 
             orderResponse = this.sendDataToMarques(mapper);
             String patientId = orderResponse.getPatientId();
@@ -64,14 +64,14 @@ public class DataService {
                 insuranceFormRepository.save(insuranceForm);
                 LOGGER.info("Patient Data has saved "+patientId);
             }
-            else {
-                LOGGER.info("Data does not save");
-            }
+            printDocLink =  seleniumService.processForm(mapper);
+            printDocLink.setMarquisPdfLink(orderResponse.getPdfUrl());
+
             
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
-        return new ResponseEntity<>(new DefaultResponse("Success", "Form Data has save successfully", orderResponse.getPdfUrl()), HttpStatus.OK);
+       return new ResponseEntity<>(new DefaultResponse("Success", "Form Data has save successfully", printDocLink), HttpStatus.OK);
        // return new ResponseEntity<>(new DefaultResponse("Success", "Form Data has save successfully", "Selenium Testing"), HttpStatus.OK);
 
     }
@@ -212,7 +212,7 @@ public class DataService {
             patientMapper.setDob(date);
             patientMapper.setSex(insuranceFormMapper.getGender());
             patientMapper.setAddress1(insuranceFormMapper.getStreet());
-
+            patientMapper.setPhone(insuranceFormMapper.getMobileNumber());
         } catch (Exception e) {
           LOGGER.error(e.getMessage(), e);
         }

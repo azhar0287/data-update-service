@@ -39,10 +39,4 @@ public class DataController {
         ResponseEntity response = dataService.isAuthenticated(userDto);
         return response;
     }
-
-   /* @GetMapping(value = "/test")
-    @ResponseBody
-    public void processForm() {
-        seleniumService.processForm();
-    }*/
 }
