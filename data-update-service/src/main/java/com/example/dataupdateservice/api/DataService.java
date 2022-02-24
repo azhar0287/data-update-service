@@ -71,8 +71,8 @@ public class DataService {
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
-       // return new ResponseEntity<>(new DefaultResponse("Success", "Form Data has save successfully", orderResponse.getPdfUrl()), HttpStatus.OK);
-        return new ResponseEntity<>(new DefaultResponse("Success", "Form Data has save successfully", "Selenium Testing"), HttpStatus.OK);
+        return new ResponseEntity<>(new DefaultResponse("Success", "Form Data has save successfully", orderResponse.getPdfUrl()), HttpStatus.OK);
+       // return new ResponseEntity<>(new DefaultResponse("Success", "Form Data has save successfully", "Selenium Testing"), HttpStatus.OK);
 
     }
 
@@ -187,8 +187,8 @@ public class DataService {
                 if(patientResponseMapper.getSuccess().equalsIgnoreCase("true") && patientResponseMapper.getMsg().equalsIgnoreCase("OK")) {
                     newPatientId = patientResponseMapper.getPatid();
                 }
-            }
-            else {
+            } else {
+
                 if(patientResponseMapper.getSuccess().equalsIgnoreCase("true") && patientResponseMapper.getMsg().equalsIgnoreCase("OK")) {
                     newPatientId = patientResponseMapper.getPatid();
                 }
@@ -211,6 +211,7 @@ public class DataService {
             LOGGER.info("Date converted "+date);
             patientMapper.setDob(date);
             patientMapper.setSex(insuranceFormMapper.getGender());
+            patientMapper.setAddress1(insuranceFormMapper.getStreet());
 
         } catch (Exception e) {
           LOGGER.error(e.getMessage(), e);

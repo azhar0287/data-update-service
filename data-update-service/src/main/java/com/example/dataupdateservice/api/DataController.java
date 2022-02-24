@@ -40,9 +40,9 @@ public class DataController {
         return response;
     }
 
-    @GetMapping(value = "/test")
+   /* @GetMapping(value = "/test")
     @ResponseBody
     public void processForm() {
-        //seleniumService.processForm();
-    }
+        seleniumService.processForm();
+    }*/
 }

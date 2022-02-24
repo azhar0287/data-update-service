@@ -187,7 +187,7 @@ public class OrderCreateService {
             map.add("outputformat", "JSON");
             map.add("insid1", "11111111"); //Insurance Policy
             map.add("iaddr1", mapper.getStreet());
-            map.add("iaddr2", mapper.getStreet());
+            map.add("iaddr2", mapper.getCity());
             map.add("istate", mapper.getState());
             map.add("izip", mapper.getZipCode());
             map.add("relation","SE");
@@ -212,6 +212,7 @@ public class OrderCreateService {
     String processOrderTestSrc(String patientId, InsuranceFormMapper mapper) {
         String ordNum = "";
         try {
+
             MultiValueMap<String, String> map= new LinkedMultiValueMap<>();
             map.add("mode", "save");
             map.add("patid", patientId);
@@ -225,7 +226,6 @@ public class OrderCreateService {
             map.add("ordphys", "1588");
             map.add("ordclt", "1551");
             map.add("source", "Blood");
-
 
             String response = sendRequestByRestTemplate(map, ORDER_TEST_SRC);
             if(response != "") {
