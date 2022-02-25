@@ -168,8 +168,7 @@ public class SeleniumService {
 
             updatePatientButton.click();
             Thread.sleep(5000);
-
-
+            
             driver.findElement(new By.ByXPath("//*[@id='divPatientInsurance']/a/div[3]")).click();
 
             driver.findElement(By.className("addlink")).click();
