@@ -58,7 +58,7 @@ public class SeleniumService {
         DesiredCapabilities capabilities = DesiredCapabilities.chrome();
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--no-sandbox"); // Bypass OS security model, MUST BE THE VERY FIRST OPTION
-       // options.addArguments("--headless");
+        options.addArguments("--headless");
         options.setExperimentalOption("useAutomationExtension", false);
         options.addArguments("start-maximized"); // open Browser in maximized mode
         options.addArguments("disable-infobars");
@@ -110,7 +110,6 @@ public class SeleniumService {
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_ddlPhysician_ddlObj")));
             driver.findElement(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_ddlPhysician_ddlObj")).click();
             driver.findElement(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_ddlPhysician_ddlObj")).sendKeys("McCoy, APRN Sandra");
-
 
             Thread.sleep(1000);
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_txtFirstName")));
@@ -167,8 +166,11 @@ public class SeleniumService {
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("cphDefault_cphTemplate_cphTemplate_btnSave")));
 
             updatePatientButton.click();
+
+            LOGGER.info("Update Patient Clicked ");
+
             Thread.sleep(5000);
-            
+            wait.until(ExpectedConditions.visibilityOfElementLocated(new By.ByXPath("//*[@id='divPatientInsurance']/a/div[3]")));
             driver.findElement(new By.ByXPath("//*[@id='divPatientInsurance']/a/div[3]")).click();
 
             driver.findElement(By.className("addlink")).click();
@@ -199,6 +201,7 @@ public class SeleniumService {
 
             driver.findElement(By.id("cphTemplate_btnSave")).click();
 
+            LOGGER.info("Insurance added ");
             Thread.sleep(5000);
             driver.switchTo().parentFrame();
 
@@ -226,6 +229,7 @@ public class SeleniumService {
 
             driver.findElement((By.id("cphTemplate_laborderdiagnosiscodeDetail_gvDiagnosisCode_chkDiagnosisCodeMap_0"))).click();
             Thread.sleep(5000);
+            LOGGER.info("Diagnosis added ");
 
             driver.findElement(By.id("cphTemplate_btnClose")).click();
 
@@ -242,6 +246,10 @@ public class SeleniumService {
             WebElement iframe4 = driver.findElement(new By.ByXPath("//*[@id='modalIframe']"));
             driver.switchTo().frame(iframe4);
 
+            LOGGER.info("Test added ");
+
+            Thread.sleep(4000);
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.linkText("Print Requisition")));
             String pdfLink = driver.findElement(By.linkText("Print Requisition")).getAttribute("href");
             LOGGER.info("Pdf Link "+pdfLink);
             driver.findElement(By.id("cphTemplate_lnkPrintRequisition")).click();
@@ -250,12 +258,11 @@ public class SeleniumService {
             String labelLink = driver.findElement (By.linkText("Print Label")).getAttribute("href");
             driver.findElement (By.linkText("Print Label")).click();
 
-
             printDocLink.setFirstToxPdfLink(pdfLink);
             printDocLink.setFirstToxLabelLink(labelLink);
 
             LOGGER.info("FirstTox Form has submitted successfully");
-            //driver.quit();
+            driver.quit();
         }
         return printDocLink;
     }
