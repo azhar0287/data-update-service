@@ -1,12 +1,16 @@
 package com.example.dataupdateservice.insuranceform;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.util.Date;
 
 @Entity
@@ -46,4 +50,11 @@ public class InsuranceForm {
     @Basic(fetch = FetchType.EAGER)
     private byte[] insuranceIdImage;
 
+    @JsonIgnore
+    @CreationTimestamp
+    private ZonedDateTime createdAt; //our system created datetime i.e. for record
+
+    @JsonIgnore
+    @UpdateTimestamp
+    private ZonedDateTime updatedAt;
 }

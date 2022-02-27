@@ -50,7 +50,24 @@ public class DataService {
     String housecall = "NO";
     String patid = "NEW";
 
-    public ResponseEntity addFormData(InsuranceFormMapper mapper) {
+    public ResponseEntity addFormDataForFirstox(InsuranceFormMapper mapper) {
+        OrderResponse orderResponse = null;
+        PrintDocLink printDocLink = new PrintDocLink();
+        try {
+
+            InsuranceForm insuranceForm = this.mapFormData(mapper);
+            insuranceFormRepository.save(insuranceForm);
+            printDocLink =  seleniumService.processForm(mapper);
+
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+       return new ResponseEntity<>(new DefaultResponse("Success", "Form Data has save successfully", printDocLink), HttpStatus.OK);
+       // return new ResponseEntity<>(new DefaultResponse("Success", "Form Data has save successfully", "Selenium Testing"), HttpStatus.OK);
+
+    }
+
+    public ResponseEntity addFormDataForMarquis(InsuranceFormMapper mapper) {
         OrderResponse orderResponse = null;
         PrintDocLink printDocLink = new PrintDocLink();
         try {
@@ -64,17 +81,13 @@ public class DataService {
                 insuranceFormRepository.save(insuranceForm);
                 LOGGER.info("Patient Data has saved "+patientId);
             }
-            printDocLink =  seleniumService.processForm(mapper);
             printDocLink.setMarquisPdfLink(orderResponse.getPdfUrl());
-
-            
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
-       return new ResponseEntity<>(new DefaultResponse("Success", "Form Data has save successfully", printDocLink), HttpStatus.OK);
-       // return new ResponseEntity<>(new DefaultResponse("Success", "Form Data has save successfully", "Selenium Testing"), HttpStatus.OK);
-
+        return new ResponseEntity<>(new DefaultResponse("Success", "Form Data has save successfully", printDocLink), HttpStatus.OK);
     }
+
 
     public InsuranceForm mapFormData(InsuranceFormMapper mapper) {
         InsuranceForm insuranceForm = new InsuranceForm();
@@ -239,4 +252,16 @@ public class DataService {
         }
    }
 
+   public ResponseEntity getOrderStats() {
+       CountDto countDto = new CountDto();
+        try {
+            int dailyCount = insuranceFormRepository.getDailyCount();
+            countDto.setDailyCount(dailyCount);
+
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+
+        }
+       return new ResponseEntity(countDto, HttpStatus.OK);
+   }
 }

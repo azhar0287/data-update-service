@@ -24,11 +24,26 @@ public class DataController {
     @Autowired
     SeleniumService seleniumService;
 
-    @RequestMapping(value = "", method = RequestMethod.POST)
+    @RequestMapping(value = "/marquis", method = RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity addFormData(@RequestBody InsuranceFormMapper insuranceForm) {
+    public ResponseEntity addFormDataFirstox(@RequestBody InsuranceFormMapper insuranceForm) {
+        LOGGER.info("Request received for form data marquis");
+        ResponseEntity response = dataService.addFormDataForMarquis(insuranceForm);
+        return response;
+    }
+
+    @RequestMapping(value = "/firstox", method = RequestMethod.POST)
+    @ResponseBody
+    public ResponseEntity addFormDataMarquis(@RequestBody InsuranceFormMapper insuranceForm) {
+        LOGGER.info("Request received for form data firstox");
+        ResponseEntity response = dataService.addFormDataForFirstox(insuranceForm);
+        return response;
+    }
+
+    @GetMapping(value = "/orders/count")
+    public ResponseEntity getOrderStats() {
         LOGGER.info("Request received for form data");
-        ResponseEntity response = dataService.addFormData(insuranceForm);
+        ResponseEntity response = dataService.getOrderStats();
         return response;
     }
 

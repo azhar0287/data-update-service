@@ -63,10 +63,9 @@ public class SeleniumService {
         options.addArguments("start-maximized"); // open Browser in maximized mode
         options.addArguments("disable-infobars");
         options.addArguments("--disable-extensions"); // disabling extensions
-        options.addArguments("--disable-gpu"); // applicable to windows os only
+        //options.addArguments("--disable-gpu"); // applicable to windows os only
         options.addArguments("--disable-dev-shm-usage"); // overcome limited resource problems
         options.merge(capabilities);
-
         return options;
     }
 
@@ -169,7 +168,7 @@ public class SeleniumService {
 
             LOGGER.info("Update Patient Clicked ");
 
-            Thread.sleep(5000);
+            Thread.sleep(10000);
             wait.until(ExpectedConditions.visibilityOfElementLocated(new By.ByXPath("//*[@id='divPatientInsurance']/a/div[3]")));
             driver.findElement(new By.ByXPath("//*[@id='divPatientInsurance']/a/div[3]")).click();
 
@@ -196,17 +195,22 @@ public class SeleniumService {
 
             Thread.sleep(5000);
             driver.findElement(new By.ByClassName("selectlink")).click();
+
             Thread.sleep(5000);
             driver.switchTo().parentFrame();
-
             driver.findElement(By.id("cphTemplate_btnSave")).click();
 
             LOGGER.info("Insurance added ");
-            Thread.sleep(5000);
+            Thread.sleep(3000);
+            driver.switchTo().parentFrame();
             driver.switchTo().parentFrame();
 
-            Thread.sleep(10000);
+            Thread.sleep(5000);
+            //driver.findElement(By.linkText("Create Order")).click();
+            //wait = new WebDriverWait(driver, 180);
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("addorderlink")));
             driver.findElement(By.className("addorderlink")).click();
+
 
             Thread.sleep(2000);
             sel = new Select(driver.findElement(By.id("cphDefault_cphTemplate_laborderDetail_ddlCustomField1")));
