@@ -210,8 +210,7 @@ public class SeleniumService {
             //wait = new WebDriverWait(driver, 180);
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("addorderlink")));
             driver.findElement(By.className("addorderlink")).click();
-
-
+            
             Thread.sleep(2000);
             sel = new Select(driver.findElement(By.id("cphDefault_cphTemplate_laborderDetail_ddlCustomField1")));
             sel.selectByVisibleText("CPT-Saline");
