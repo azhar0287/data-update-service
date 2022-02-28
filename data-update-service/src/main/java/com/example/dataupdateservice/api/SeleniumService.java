@@ -65,6 +65,8 @@ public class SeleniumService {
         options.addArguments("--disable-extensions"); // disabling extensions
         //options.addArguments("--disable-gpu"); // applicable to windows os only
         options.addArguments("--disable-dev-shm-usage"); // overcome limited resource problems
+        options.addArguments("--window-size=1920x1080"); //I added this
+
         options.merge(capabilities);
         return options;
     }
@@ -205,12 +207,13 @@ public class SeleniumService {
             driver.switchTo().parentFrame();
             driver.switchTo().parentFrame();
 
+
             Thread.sleep(5000);
             //driver.findElement(By.linkText("Create Order")).click();
             //wait = new WebDriverWait(driver, 180);
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("addorderlink")));
             driver.findElement(By.className("addorderlink")).click();
-            
+
             Thread.sleep(2000);
             sel = new Select(driver.findElement(By.id("cphDefault_cphTemplate_laborderDetail_ddlCustomField1")));
             sel.selectByVisibleText("CPT-Saline");
@@ -243,6 +246,7 @@ public class SeleniumService {
 
             Thread.sleep(3000);
             driver.findElement(By.id("cphDefault_cphTemplate_laborderDetail_orderTests_gvOrderPanels_chkOrderTest_0")).click();
+            Thread.sleep(3000);
             driver.findElement(By.id("cphDefault_cphTemplate_laborderDetail_btnCreateOrder")).click();
 
             Thread.sleep(5000);

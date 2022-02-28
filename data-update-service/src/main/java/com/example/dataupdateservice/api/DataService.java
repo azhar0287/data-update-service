@@ -260,7 +260,6 @@ public class DataService {
 
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
-
         }
        return new ResponseEntity(countDto, HttpStatus.OK);
    }

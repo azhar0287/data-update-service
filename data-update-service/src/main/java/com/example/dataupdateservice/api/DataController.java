@@ -26,7 +26,7 @@ public class DataController {
 
     @RequestMapping(value = "/marquis", method = RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity addFormDataFirstox(@RequestBody InsuranceFormMapper insuranceForm) {
+    public ResponseEntity addFormDataMarquis(@RequestBody InsuranceFormMapper insuranceForm) {
         LOGGER.info("Request received for form data marquis");
         ResponseEntity response = dataService.addFormDataForMarquis(insuranceForm);
         return response;
@@ -34,7 +34,7 @@ public class DataController {
 
     @RequestMapping(value = "/firstox", method = RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity addFormDataMarquis(@RequestBody InsuranceFormMapper insuranceForm) {
+    public ResponseEntity addFormDataFirstox(@RequestBody InsuranceFormMapper insuranceForm) {
         LOGGER.info("Request received for form data firstox");
         ResponseEntity response = dataService.addFormDataForFirstox(insuranceForm);
         return response;
