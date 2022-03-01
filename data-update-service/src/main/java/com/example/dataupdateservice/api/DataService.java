@@ -168,7 +168,6 @@ public class DataService {
                     LOGGER.info("Pdf url"+pdfUrl);
                }
           }
-
         }
         catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
@@ -236,7 +235,7 @@ public class DataService {
         return patientMapper;
     }
 
-   void mapOrderObject(InsuranceFormMapper mapper){
+   void mapOrderObject(InsuranceFormMapper mapper) {
         try {
             OrderMapper order = new OrderMapper();
             order.setUser(this.user);
