@@ -43,7 +43,7 @@ public class DataController {
     @GetMapping(value = "/orders/count")
     public ResponseEntity getOrderStats() {
         LOGGER.info("Request received for form data");
-        ResponseEntity response = dataService.getOrderStats();
+        ResponseEntity response = dataService.getDailyOrderStats();
         return response;
     }
 
