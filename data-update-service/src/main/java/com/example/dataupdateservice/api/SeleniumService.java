@@ -18,7 +18,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.format.DateTimeFormatter;
+import java.util.Iterator;
 import java.util.Random;
+import java.util.Set;
 
 
 @Service
@@ -200,6 +202,7 @@ public class SeleniumService {
 
             Thread.sleep(5000);
             driver.switchTo().parentFrame();
+
             driver.findElement(By.id("cphTemplate_btnSave")).click();
 
             LOGGER.info("Insurance added ");
@@ -246,7 +249,7 @@ public class SeleniumService {
 
             Thread.sleep(3000);
             driver.findElement(By.id("cphDefault_cphTemplate_laborderDetail_orderTests_gvOrderPanels_chkOrderTest_0")).click();
-            Thread.sleep(4000);
+            Thread.sleep(5000);
             driver.findElement(By.id("cphDefault_cphTemplate_laborderDetail_btnCreateOrder")).click();
 
             Thread.sleep(5000);
@@ -262,11 +265,44 @@ public class SeleniumService {
             driver.findElement(By.id("cphTemplate_lnkPrintRequisition")).click();
             Thread.sleep(2000);
 
-            String labelLink = driver.findElement (By.linkText("Print Label")).getAttribute("href");
-            driver.findElement (By.linkText("Print Label")).click();
+
+            wait.until(ExpectedConditions.elementToBeClickable(By.id("cphTemplate_lnkPrintLabel")));
+            String labelLink = driver.findElement (By.id("cphTemplate_lnkPrintLabel")).getAttribute("href");
+            LOGGER.info("Label Link "+labelLink);
+            Thread.sleep(2000);
+            driver.findElement (By.id("cphTemplate_lnkPrintLabel")).click();
+            //Thread.sleep(4000);
+
+            wait = new WebDriverWait(driver,5);
+            wait.until(ExpectedConditions.numberOfWindowsToBe(3));
+            //Declare as global variables
+            String parent_tab;
+            String child_tab;
+            parent_tab = driver.getWindowHandle();
+            Thread.sleep(2000);
+            driver.findElement (By.id("cphTemplate_lnkPrintLabel")).click();
+
+            Set<String> s1 = driver.getWindowHandles();
+            Iterator<String> i1 = s1.iterator();
+            while(i1.hasNext())
+            {
+                child_tab = i1.next();
+//                if (!parent_tab.equalsIgnoreCase(child_tab))
+//                {
+//                    driver.switchTo().window(child_tab);
+                    //new WebDriverWait(driver, 10).until(ExpectedConditions.urlContains("tourismpei.com"));
+                    String currentURL;
+                    currentURL = driver.getCurrentUrl();
+                    //if (currentURL.equalsIgnoreCase("https://www.tourismpei.com/")) {
+                        System.out.println("Matches" + currentURL);
+//                    } else {
+//                        System.out.println("Does not match" + currentURL);
+//                    }
+                }
+            //}
 
             printDocLink.setFirstToxPdfLink(pdfLink);
-            printDocLink.setFirstToxLabelLink(labelLink);
+//            printDocLink.setFirstToxLabelLink(labelLink);
 
             LOGGER.info("FirstTox Form has submitted successfully");
             driver.quit();
