@@ -269,11 +269,10 @@ public class DataService {
             countDto.setDailyCount(dailyCount.size());
             countDto.setWeeklyCount(weeklyCount.size());
 
-
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
 
         }
-       return new ResponseEntity(countDto, HttpStatus.OK);
+       return new ResponseEntity<>(countDto, HttpStatus.OK);
    }
 }
