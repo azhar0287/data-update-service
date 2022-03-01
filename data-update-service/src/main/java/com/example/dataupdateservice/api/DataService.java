@@ -23,7 +23,11 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
+import java.util.List;
 
 
 @Service
@@ -57,7 +61,7 @@ public class DataService {
 
             InsuranceForm insuranceForm = this.mapFormData(mapper);
             insuranceFormRepository.save(insuranceForm);
-            printDocLink =  seleniumService.processForm(mapper);
+            //printDocLink =  seleniumService.processForm(mapper);
 
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
@@ -252,11 +256,19 @@ public class DataService {
         }
    }
 
-   public ResponseEntity getOrderStats() {
+   public ResponseEntity getDailyOrderStats() {
        CountDto countDto = new CountDto();
         try {
-            int dailyCount = insuranceFormRepository.getDailyCount();
-            countDto.setDailyCount(dailyCount);
+            LocalDate today = LocalDate.now();
+            Date currentDate = java.sql.Date.valueOf(today);
+            LocalDate endDate = today.minus(1, ChronoUnit.WEEKS);
+            Date weekDate = java.sql.Date.valueOf(endDate);
+
+            List<Long> dailyCount = insuranceFormRepository.getDailyCount(currentDate);
+            List<Long> weeklyCount = insuranceFormRepository.getWeeklyCount(weekDate, currentDate);
+            countDto.setDailyCount(dailyCount.size());
+            countDto.setWeeklyCount(weeklyCount.size());
+
 
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
