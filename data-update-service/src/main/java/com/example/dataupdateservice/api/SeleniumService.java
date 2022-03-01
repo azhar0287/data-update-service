@@ -273,7 +273,7 @@ public class SeleniumService {
             driver.findElement (By.id("cphTemplate_lnkPrintLabel")).click();
             //Thread.sleep(4000);
 
-            wait = new WebDriverWait(driver,5);
+           /* wait = new WebDriverWait(driver,5);
             wait.until(ExpectedConditions.numberOfWindowsToBe(3));
             //Declare as global variables
             String parent_tab;
@@ -300,10 +300,9 @@ public class SeleniumService {
 //                    }
                 }
             //}
-
+*/
             printDocLink.setFirstToxPdfLink(pdfLink);
-//            printDocLink.setFirstToxLabelLink(labelLink);
-
+            printDocLink.setFirstToxLabelLink(labelLink);
             LOGGER.info("FirstTox Form has submitted successfully");
             driver.quit();
         }

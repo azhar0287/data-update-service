@@ -61,7 +61,7 @@ public class DataService {
 
             InsuranceForm insuranceForm = this.mapFormData(mapper);
             insuranceFormRepository.save(insuranceForm);
-            //printDocLink =  seleniumService.processForm(mapper);
+            printDocLink =  seleniumService.processForm(mapper);
 
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
