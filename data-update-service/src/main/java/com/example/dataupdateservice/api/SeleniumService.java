@@ -18,9 +18,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.format.DateTimeFormatter;
-import java.util.Iterator;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 
 @Service
@@ -69,7 +67,13 @@ public class SeleniumService {
         options.addArguments("--disable-dev-shm-usage"); // overcome limited resource problems
         options.addArguments("--window-size=1920x1080"); //I added this
         options.addArguments("disable-popup-blocking");
+        options.addArguments("--disable-notifications");
+        options.setPageLoadStrategy(PageLoadStrategy.EAGER);
+        options.addArguments("--disable-web-security");
+        options.addArguments("--use-fake-ui-for-media-stream");
+
         options.merge(capabilities);
+
         return options;
     }
 
@@ -89,9 +93,9 @@ public class SeleniumService {
     }
 
     public PrintDocLink processForm(InsuranceFormMapper mapper) throws InterruptedException {
-        String response  = this.doLogin();
+        String response = this.doLogin();
         PrintDocLink printDocLink = new PrintDocLink();
-        if(response.equalsIgnoreCase("FirsTox")) {
+        if (response.equalsIgnoreCase("FirsTox")) {
             LOGGER.info("Logged in Successfully ");
 
             WebDriverWait wait = new WebDriverWait(driver, 120);// 1 minute
@@ -116,12 +120,12 @@ public class SeleniumService {
 
             Thread.sleep(1000);
             //wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_txtFirstName")));
-            WebElement firstName  = driver.findElement(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_txtFirstName"));
+            WebElement firstName = driver.findElement(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_txtFirstName"));
             firstName.sendKeys(mapper.getFirstName());
 
             Thread.sleep(1000);
             //wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_txtLastName")));
-            WebElement lastName  = driver.findElement(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_txtLastName"));
+            WebElement lastName = driver.findElement(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_txtLastName"));
             lastName.sendKeys(mapper.getLastName());
 
             Thread.sleep(1000);
@@ -147,11 +151,11 @@ public class SeleniumService {
             Thread.sleep(2000);
             //wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_txtEmailAddress")));
             driver.findElement(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_txtEmailAddress")).click();
-            driver.findElement(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_txtEmailAddress")).sendKeys(mapper.getEmail()+"+"+new Random().nextDouble());
+            driver.findElement(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_txtEmailAddress")).sendKeys(mapper.getEmail() + "+" + new Random().nextDouble());
 
             Thread.sleep(1000);
             //wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_txtDOB")));
-            WebElement dob  = driver.findElement(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_txtDOB"));
+            WebElement dob = driver.findElement(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_txtDOB"));
             dob.sendKeys(mapper.getDob().format(DateTimeFormatter.ofPattern("MM/dd/YYYY")));
 
             Thread.sleep(2000);
@@ -165,7 +169,7 @@ public class SeleniumService {
             driver.findElement(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_txtHomePhone")).sendKeys(mapper.getMobileNumber());
 
             Thread.sleep(1000);
-            WebElement updatePatientButton  = driver.findElement(By.id("cphDefault_cphTemplate_cphTemplate_btnSave"));
+            WebElement updatePatientButton = driver.findElement(By.id("cphDefault_cphTemplate_cphTemplate_btnSave"));
             //wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("cphDefault_cphTemplate_cphTemplate_btnSave")));
             Thread.sleep(1000);
             updatePatientButton.click();
@@ -229,7 +233,7 @@ public class SeleniumService {
             driver.findElement(By.id("cphDefault_cphTemplate_laborderDetail_lnkAddDiagnosisCode")).click();
             Thread.sleep(3000);
 
-            WebElement iframe3 = driver.findElement (new By.ByXPath("//*[@id='modalIframe']"));
+            WebElement iframe3 = driver.findElement(new By.ByXPath("//*[@id='modalIframe']"));
             driver.switchTo().frame(iframe3);
             Thread.sleep(1000);
 
@@ -261,49 +265,50 @@ public class SeleniumService {
             Thread.sleep(4000);
             //wait.until(ExpectedConditions.visibilityOfElementLocated(By.linkText("Print Requisition")));
             String pdfLink = driver.findElement(By.linkText("Print Requisition")).getAttribute("href");
-            LOGGER.info("Pdf Link "+pdfLink);
+            LOGGER.info("Pdf Link " + pdfLink);
             driver.findElement(By.id("cphTemplate_lnkPrintRequisition")).click();
             Thread.sleep(2000);
 
-
             wait.until(ExpectedConditions.elementToBeClickable(By.id("cphTemplate_lnkPrintLabel")));
-            String labelLink = driver.findElement (By.id("cphTemplate_lnkPrintLabel")).getAttribute("href");
-            LOGGER.info("Label Link "+labelLink);
+            String labelLink = driver.findElement(By.id("cphTemplate_lnkPrintLabel")).getAttribute("href");
+            LOGGER.info("Label Link " + labelLink);
             Thread.sleep(2000);
-            driver.findElement (By.id("cphTemplate_lnkPrintLabel")).click();
-            //Thread.sleep(4000);
+            driver.findElement(By.id("cphTemplate_lnkPrintLabel")).click();
+            Thread.sleep(4000);
 
-           /* wait = new WebDriverWait(driver,5);
-            wait.until(ExpectedConditions.numberOfWindowsToBe(3));
             //Declare as global variables
             String parent_tab;
             String child_tab;
+            List<String> urls = new ArrayList<>();
+
             parent_tab = driver.getWindowHandle();
             Thread.sleep(2000);
-            driver.findElement (By.id("cphTemplate_lnkPrintLabel")).click();
+            driver.findElement(By.id("cphTemplate_lnkPrintLabel")).click();
+
+            /*Thread.sleep(3000);
 
             Set<String> s1 = driver.getWindowHandles();
             Iterator<String> i1 = s1.iterator();
-            while(i1.hasNext())
-            {
+            LOGGER.info("Tabs qty "+s1.size());
+            while (i1.hasNext()) {
+
                 child_tab = i1.next();
-//                if (!parent_tab.equalsIgnoreCase(child_tab))
-//                {
-//                    driver.switchTo().window(child_tab);
-                    //new WebDriverWait(driver, 10).until(ExpectedConditions.urlContains("tourismpei.com"));
-                    String currentURL;
-                    currentURL = driver.getCurrentUrl();
-                    //if (currentURL.equalsIgnoreCase("https://www.tourismpei.com/")) {
-                        System.out.println("Matches" + currentURL);
-//                    } else {
-//                        System.out.println("Does not match" + currentURL);
-//                    }
+                if ( !parent_tab.equalsIgnoreCase(child_tab)) {
+                    driver.switchTo().window(child_tab);
+                    String currentURL = driver.getCurrentUrl();
+                    LOGGER.info("Current url: "+ currentURL);
+                    if(currentURL.contains("label.ashx")) {
+                        printDocLink.setFirstToxLabelLink(currentURL);
+                        break;
+                    }
+                } else {
+                    System.out.println("Does not match");
                 }
-            //}
-*/
+            }
+            */
             printDocLink.setFirstToxPdfLink(pdfLink);
-            printDocLink.setFirstToxLabelLink(labelLink);
             LOGGER.info("FirstTox Form has submitted successfully");
+            LOGGER.info("Label Url"+ printDocLink.getFirstToxLabelLink());
             driver.quit();
         }
         return printDocLink;

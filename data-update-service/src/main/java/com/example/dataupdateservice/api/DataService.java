@@ -55,20 +55,13 @@ public class DataService {
     String patid = "NEW";
 
     public ResponseEntity addFormDataForFirstox(InsuranceFormMapper mapper) {
-        OrderResponse orderResponse = null;
         PrintDocLink printDocLink = new PrintDocLink();
         try {
-
-            InsuranceForm insuranceForm = this.mapFormData(mapper);
-            insuranceFormRepository.save(insuranceForm);
             printDocLink =  seleniumService.processForm(mapper);
-
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
        return new ResponseEntity<>(new DefaultResponse("Success", "Form Data has save successfully", printDocLink), HttpStatus.OK);
-       // return new ResponseEntity<>(new DefaultResponse("Success", "Form Data has save successfully", "Selenium Testing"), HttpStatus.OK);
-
     }
 
     public ResponseEntity addFormDataForMarquis(InsuranceFormMapper mapper) {
@@ -76,7 +69,6 @@ public class DataService {
         PrintDocLink printDocLink = new PrintDocLink();
         try {
             InsuranceForm insuranceForm = this.mapFormData(mapper);
-
             orderResponse = this.sendDataToMarques(mapper);
             String patientId = orderResponse.getPatientId();
             if(patientId != null) {
