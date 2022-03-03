@@ -7,11 +7,9 @@ import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
-import java.util.Date;
 
 @Entity
 @Getter @Setter @ToString @NoArgsConstructor
@@ -57,4 +55,6 @@ public class InsuranceForm {
     @JsonIgnore
     @UpdateTimestamp
     private ZonedDateTime updatedAt;
+
+
 }

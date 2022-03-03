@@ -1,5 +1,6 @@
 package com.example.dataupdateservice.insuranceform;
 
+import com.example.dataupdateservice.mappers.PatientDataMapper;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -17,4 +18,9 @@ public interface InsuranceFormRepository extends JpaRepository<InsuranceForm, Lo
 
     @Query("Select form.id FROM InsuranceForm form where DATE(form.createdAt) Between :startDate and :endDate")
     List<Long> getWeeklyCount(@Param("startDate") Date startDate, @Param("endDate") Date endDate);
+
+
+    @Query("Select new com.example.dataupdateservice.mappers.PatientDataMapper(form.firstName, form.lastName, form.email, form.mobileNumber, form.createdAt, form.gender, form.dob) FROM InsuranceForm form where DATE(form.createdAt)  =:startDate")
+    List<PatientDataMapper> getDailyCountData(@Param("startDate") Date startDate);
+
 }

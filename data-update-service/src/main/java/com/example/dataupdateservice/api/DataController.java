@@ -47,6 +47,13 @@ public class DataController {
         return response;
     }
 
+    @GetMapping(value = "/orders/table")
+    public ResponseEntity getOrderStatsForTable() {
+        LOGGER.info("Request received for form data");
+        ResponseEntity response = dataService.getDailyOrderStatsForTable();
+        return response;
+    }
+
     @PostMapping(value = "/user/signIn")
     @ResponseBody
     public ResponseEntity getUserDetails(@RequestBody UserDto userDto) {
