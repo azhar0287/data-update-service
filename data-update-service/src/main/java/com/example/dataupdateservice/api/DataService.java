@@ -252,20 +252,15 @@ public class DataService {
         try {
             LocalDate today = LocalDate.now();
             Date currentDate = java.sql.Date.valueOf(today);
-            LocalDate endDate = today.minus(1, ChronoUnit.WEEKS);
-            Date weekDate = java.sql.Date.valueOf(endDate);
-
             List<PatientDataMapper> patientData = insuranceFormRepository.getDailyCountData(currentDate);
-
             return new ResponseEntity(patientData, HttpStatus.OK);
-
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
        return new ResponseEntity<>(countDto, HttpStatus.OK);
    }
 
-    public ResponseEntity getDailyOrderStats() {
+   public ResponseEntity getDailyOrderStats() {
         CountDto countDto = new CountDto();
         try {
             LocalDate today = LocalDate.now();
@@ -282,6 +277,6 @@ public class DataService {
             LOGGER.error(e.getMessage(), e);
         }
         return new ResponseEntity<>(countDto, HttpStatus.OK);
-    }
+   }
 
 }
