@@ -247,10 +247,10 @@ public class OrderCreateService {
             map.add("json", this.getMappedInsuranceToOrder(mapper));
             map.add("ordernum", "NEW");
             map.add("user", this.user);
-            map.add("collectdt", this.getCurrentDate());
-            map.add("collecttime", this.getCurrentTime());
-            map.add("orderdate", this.getCurrentDate());
-            map.add("ordertime", this.getCurrentTime());
+            map.add("collectdt",this.getCurrentDateForSpecificTz());
+            map.add("collecttime",this.getCurrentTimeForSpecificTz());
+            map.add("orderdate", this.getCurrentDateForSpecificTz());
+            map.add("ordertime", this.getCurrentTimeForSpecificTz());
             map.add("ordphys", "1588");
             map.add("ordclt", "1551");
             map.add("source", "Blood");
