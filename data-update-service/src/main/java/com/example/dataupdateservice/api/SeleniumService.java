@@ -43,9 +43,7 @@ public class SeleniumService {
     WebDriver driver;
 
     public WebDriver getDriver() {
-
-
-       System.setProperty("webdriver.chrome.driver", System.getProperty("user.dir") + "/usr/bin/chromedriver");
+        System.setProperty("webdriver.chrome.driver", System.getProperty("user.dir") + "/usr/bin/chromedriver");
         //System.setProperty("webdriver.chrome.driver", System.getProperty("user.dir") + "src/main/resources/chromedriver.exe");
         WebDriverManager.chromedriver().setup();
         ChromeOptions options = getChromeOptions();
@@ -58,7 +56,7 @@ public class SeleniumService {
         DesiredCapabilities capabilities = DesiredCapabilities.chrome();
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--no-sandbox"); // Bypass OS security model, MUST BE THE VERY FIRST OPTION
-        //options.addArguments("--headless");
+        options.addArguments("--headless");
         options.setExperimentalOption("useAutomationExtension", false);
         options.addArguments("start-maximized"); // open Browser in maximized mode
         options.addArguments("disable-infobars");
@@ -68,7 +66,7 @@ public class SeleniumService {
         options.addArguments("--window-size=1920x1080"); //I added this
         options.addArguments("disable-popup-blocking");
         options.addArguments("--disable-notifications");
-        options.setPageLoadStrategy(PageLoadStrategy.EAGER);
+        options.setPageLoadStrategy(PageLoadStrategy.NORMAL);
         options.addArguments("--disable-web-security");
         options.addArguments("--use-fake-ui-for-media-stream");
 
@@ -249,7 +247,12 @@ public class SeleniumService {
             Thread.sleep(3000);
             driver.switchTo().parentFrame();
             Thread.sleep(2000);
-            driver.findElement((By.id("cphDefault_cphTemplate_laborderDetail_txtCollectionDateTime"))).sendKeys(orderCreateService.getCurrentDate());
+
+            ////////////////
+            WebElement req = driver.findElement(By.id("cphDefault_cphTemplate_laborderDetail_txtRequisitionDateTime"));
+            String time = req.getAttribute("value");
+
+            driver.findElement((By.id("cphDefault_cphTemplate_laborderDetail_txtCollectionDateTime"))).sendKeys(time);
 
             Thread.sleep(3000);
             driver.findElement(By.id("cphDefault_cphTemplate_laborderDetail_orderTests_gvOrderPanels_chkOrderTest_0")).click();

@@ -19,8 +19,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 
 @Service
@@ -80,6 +79,35 @@ public class OrderCreateService {
         }
         ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
         return ow.writeValueAsString(diagnoseMapper);
+    }
+
+    public String getCurrentDateForSpecificTz() {
+        String dateString = "";
+        try {
+            Instant nowUtc = Instant.now();
+            ZoneId asiaSingapore = ZoneId.of("America/Chicago");
+            ZonedDateTime date = ZonedDateTime.ofInstant(nowUtc, asiaSingapore);            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MM-dd-YYYY");
+            dateString = date.format(dateFormatter);
+            LOGGER.info("Current date for order collection/etc: "+dateString);
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+        return dateString;
+    }
+
+    public String getCurrentTimeForSpecificTz() {
+        String dateString = "";
+        try {
+            Instant nowUtc = Instant.now();
+            ZoneId asiaSingapore = ZoneId.of("America/Chicago");
+            ZonedDateTime date = ZonedDateTime.ofInstant(nowUtc, asiaSingapore);
+            DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+            dateString = date.format(timeFormatter);
+            LOGGER.info("Current date for order collection/etc: "+dateString);
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+        return dateString;
     }
 
     public String getCurrentDate() {

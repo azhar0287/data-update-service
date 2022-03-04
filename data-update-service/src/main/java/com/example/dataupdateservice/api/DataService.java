@@ -12,22 +12,32 @@ import com.example.dataupdateservice.user.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
+import net.bytebuddy.TypeCache;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import java.awt.print.Book;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
+
+import static org.springframework.data.domain.Sort.Direction.ASC;
+import static org.springframework.data.domain.Sort.Direction.DESC;
 
 
 @Service
@@ -144,7 +154,7 @@ public class DataService {
            newPatientId = this.createPatient(json);
            LOGGER.info("New Patient Id is "+newPatientId);
            
-          if(orderCreateService.processOrderSpec(newPatientId, insuranceFormMapper)) {
+          if (orderCreateService.processOrderSpec(newPatientId, insuranceFormMapper)) {
                LOGGER.info("Order spec has created......!");
                String orderNumber = orderCreateService.processOrderTestSrc(newPatientId, insuranceFormMapper);
                LOGGER.info("Order number (Newly created): "+orderNumber);
@@ -241,7 +251,6 @@ public class DataService {
             if(gender.equalsIgnoreCase("FEMALE")) {
                 order.setIsex("F");
             }
-
         } catch (Exception e) {
             LOGGER.info(e.getMessage(), e);
         }
@@ -253,6 +262,10 @@ public class DataService {
             LocalDate today = LocalDate.now();
             Date currentDate = java.sql.Date.valueOf(today);
             List<PatientDataMapper> patientData = insuranceFormRepository.getDailyCountData(currentDate);
+            for(int i=0; i<patientData.size(); i++) {
+                patientData.get(i).setPatientNo(i);
+            }
+
             return new ResponseEntity(patientData, HttpStatus.OK);
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
@@ -278,5 +291,4 @@ public class DataService {
         }
         return new ResponseEntity<>(countDto, HttpStatus.OK);
    }
-
 }

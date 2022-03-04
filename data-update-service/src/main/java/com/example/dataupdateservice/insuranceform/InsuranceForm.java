@@ -56,5 +56,4 @@ public class InsuranceForm {
     @UpdateTimestamp
     private ZonedDateTime updatedAt;
 
-
 }
