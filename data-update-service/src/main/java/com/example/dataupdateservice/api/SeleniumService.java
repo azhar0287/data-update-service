@@ -15,8 +15,13 @@ import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
@@ -277,18 +282,15 @@ public class SeleniumService {
             LOGGER.info("Label Link " + labelLink);
             Thread.sleep(2000);
             driver.findElement(By.id("cphTemplate_lnkPrintLabel")).click();
-            Thread.sleep(4000);
 
+            /*
+            T
             //Declare as global variables
             String parent_tab;
             String child_tab;
             List<String> urls = new ArrayList<>();
 
-            parent_tab = driver.getWindowHandle();
-            Thread.sleep(2000);
-            driver.findElement(By.id("cphTemplate_lnkPrintLabel")).click();
-
-            /*Thread.sleep(3000);
+            hread.sleep(3000);
 
             Set<String> s1 = driver.getWindowHandles();
             Iterator<String> i1 = s1.iterator();
@@ -309,11 +311,41 @@ public class SeleniumService {
                 }
             }
             */
-            printDocLink.setFirstToxPdfLink(pdfLink);
             LOGGER.info("FirstTox Form has submitted successfully");
-            LOGGER.info("Label Url"+ printDocLink.getFirstToxLabelLink());
+            printDocLink.setFirstToxPdfLink(pdfLink);
+            printDocLink.setPdf(this.getLablePdf());
             driver.quit();
         }
         return printDocLink;
+    }
+
+    public byte[] getLablePdf() {
+        byte[] pdf = new byte[0];
+        try {
+            Path pdfPath = Paths.get("/data/servers/services/label.pdf");
+            //  Path pdfPath = Paths.get("C:/Users/admin/Desktop/data/webreq.pdf");
+
+            //C:\Users\admin\Desktop\data
+            pdf = Files.readAllBytes(pdfPath);
+            LOGGER.info("pdf content" + pdf);
+
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+        return pdf;
+    }
+
+    public ResponseEntity readPdf() {
+        byte[] pdf = new byte[0];
+        try {
+            Path pdfPath = Paths.get("/data/servers/services/label.pdf");
+//            Path pdfPath = Paths.get("C:/Users/admin/Desktop/data/webreq.pdf");
+            pdf = Base64.getEncoder().encode(Files.readAllBytes(pdfPath));
+            LOGGER.info("pdf content" + pdf);
+
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+        return new ResponseEntity(pdf, HttpStatus.OK);
     }
 }

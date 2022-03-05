@@ -61,4 +61,11 @@ public class DataController {
         ResponseEntity response = dataService.isAuthenticated(userDto);
         return response;
     }
+
+    @GetMapping(value = "/pdf")
+    @ResponseBody
+    public ResponseEntity readPdf() {
+        ResponseEntity response = seleniumService.readPdf();
+        return response;
+    }
 }

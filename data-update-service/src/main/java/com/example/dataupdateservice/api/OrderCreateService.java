@@ -165,8 +165,8 @@ public class OrderCreateService {
             map.add("fasting", "N");
             map.add("json", "{\"tests\":[\"PCRW\"],\"frequency\":[\"One Time\"],\"startdt\":[\"02/18/2022\"],\"stopdt\":[\"02/18/2022\"]}");
             map.add("mode", "savetest");
-            map.add("collecttime", "15:15");
-            map.add("ordertime", "15:18");
+            map.add("collecttime", this.getCurrentTimeForSpecificTz());
+            map.add("ordertime", this.getCurrentTimeForSpecificTz());
             map.add("ordnum", orderNumber);
             map.add("ordquest_webid","NOTSET");
             map.add("housecall","NO");
@@ -193,7 +193,6 @@ public class OrderCreateService {
         }
         return false;
     }
-
 
     boolean processOrderSpec(String patientId, InsuranceFormMapper mapper) {
         try {

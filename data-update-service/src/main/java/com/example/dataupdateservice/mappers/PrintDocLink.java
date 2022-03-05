@@ -9,4 +9,5 @@ public class PrintDocLink {
     String marquisPdfLink;
     String FirstToxPdfLink;
     String FirstToxLabelLink;
+    byte[] pdf;
 }
