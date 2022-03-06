@@ -71,7 +71,7 @@ public class SeleniumService {
         options.addArguments("--window-size=1920x1080"); //I added this
         options.addArguments("disable-popup-blocking");
         options.addArguments("--disable-notifications");
-        options.setPageLoadStrategy(PageLoadStrategy.NORMAL);
+       // options.setPageLoadStrategy(PageLoadStrategy.NORMAL);
         options.addArguments("--disable-web-security");
         options.addArguments("--use-fake-ui-for-media-stream");
 
@@ -182,34 +182,37 @@ public class SeleniumService {
             Thread.sleep(10000);
             //wait.until(ExpectedConditions.visibilityOfElementLocated(new By.ByXPath("//*[@id='divPatientInsurance']/a/div[3]")));
             driver.findElement(new By.ByXPath("//*[@id='divPatientInsurance']/a/div[3]")).click();
-
             driver.findElement(By.className("addlink")).click();
+            LOGGER.info("Add link  ");
 
             Thread.sleep(5000);
             WebElement iframe1 = driver.findElement(new By.ByXPath("//*[@id='modalIframe']"));
             driver.switchTo().frame(iframe1);
+            LOGGER.info("Switch for first frame  ");
 
             Thread.sleep(3000);
             Select sel = new Select(driver.findElement(By.id("cphTemplate_patientinsuranceDetail_ddlInsurancePriority_ddlObj")));
             sel.selectByVisibleText("Primary");
             Thread.sleep(5000);
-
+            LOGGER.info("Select primary");
             driver.findElement(By.className("searchlink")).click();
 
             Thread.sleep(3000);
             WebElement iframe2 = driver.findElement(new By.ByXPath("//*[@id='modalIframe']"));
             driver.switchTo().frame(iframe2);
 
+            LOGGER.info("Switch for 2nd Frame  ");
             Thread.sleep(10000);
             driver.findElement(By.id("cphTemplate_insuranceplanlistView_gvSearch_txtSearch")).sendKeys("hrsa");
             driver.findElement(By.id("cphTemplate_insuranceplanlistView_gvSearch_txtSearch")).sendKeys(Keys.ENTER);
 
+            LOGGER.info("Hrsa added  ");
             Thread.sleep(5000);
             driver.findElement(new By.ByClassName("selectlink")).click();
 
             Thread.sleep(5000);
             driver.switchTo().parentFrame();
-
+            LOGGER.info("Save button for insurance ");
             driver.findElement(By.id("cphTemplate_btnSave")).click();
 
             LOGGER.info("Insurance added ");
@@ -218,12 +221,13 @@ public class SeleniumService {
             driver.switchTo().parentFrame();
 
 
+            LOGGER.info("Switch for Parent frame  ");
             Thread.sleep(5000);
             //driver.findElement(By.linkText("Create Order")).click();
             //wait = new WebDriverWait(driver, 180);
             //wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("addorderlink")));
             driver.findElement(By.className("addorderlink")).click();
-
+            LOGGER.info("Add order Link buttonn clicked  ");
             Thread.sleep(2000);
             sel = new Select(driver.findElement(By.id("cphDefault_cphTemplate_laborderDetail_ddlCustomField1")));
             sel.selectByVisibleText("CPT-Saline");
@@ -235,6 +239,7 @@ public class SeleniumService {
 
             driver.findElement(By.id("cphDefault_cphTemplate_laborderDetail_lnkAddDiagnosisCode")).click();
             Thread.sleep(3000);
+            LOGGER.info("Diagnosis Code selected ");
 
             WebElement iframe3 = driver.findElement(new By.ByXPath("//*[@id='modalIframe']"));
             driver.switchTo().frame(iframe3);
@@ -282,15 +287,17 @@ public class SeleniumService {
             LOGGER.info("Label Link " + labelLink);
             Thread.sleep(2000);
             driver.findElement(By.id("cphTemplate_lnkPrintLabel")).click();
+            Thread.sleep(4000);
+            driver.findElement(By.id("cphTemplate_lnkPrintLabel")).click();
 
             /*
-            T
+
             //Declare as global variables
             String parent_tab;
             String child_tab;
             List<String> urls = new ArrayList<>();
 
-            hread.sleep(3000);
+            read.sleep(3000);
 
             Set<String> s1 = driver.getWindowHandles();
             Iterator<String> i1 = s1.iterator();
@@ -339,7 +346,7 @@ public class SeleniumService {
         byte[] pdf = new byte[0];
         try {
             Path pdfPath = Paths.get("/data/servers/services/label.pdf");
-//            Path pdfPath = Paths.get("C:/Users/admin/Desktop/data/webreq.pdf");
+          //  Path pdfPath = Paths.get("C:/Users/admin/Desktop/data/webreq.pdf");
             pdf = Base64.getEncoder().encode(Files.readAllBytes(pdfPath));
             LOGGER.info("pdf content" + pdf);
 
