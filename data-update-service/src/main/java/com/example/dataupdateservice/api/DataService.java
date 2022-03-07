@@ -104,25 +104,32 @@ public class DataService {
             insuranceForm.setDob(mapper.getDob());
             insuranceForm.setGender(mapper.getGender());
             insuranceForm.setPassport(mapper.getPassport());
-            insuranceForm.setRace(mapper.getRace());
-            insuranceForm.setEthnicity(mapper.getEthnicity());
             insuranceForm.setMobileNumber(mapper.getMobileNumber());
             insuranceForm.setEmail(mapper.getEmail());
             insuranceForm.setState(mapper.getState());
             insuranceForm.setStreet(mapper.getStreet());
             insuranceForm.setCity(mapper.getCity());
             insuranceForm.setZipCode(mapper.getZipCode());
-            insuranceForm.setPersonalImage(mapper.getPersonalImage().getBytes(StandardCharsets.UTF_8));
-            insuranceForm.setInsuranceIdImage(mapper.getInsuranceIdImage().getBytes(StandardCharsets.UTF_8));
+
+            insuranceForm.setRace("Other");
+            insuranceForm.setEthnicity("Other");
 
             insuranceForm.setCollectionTime(orderCreateService.getCurrentTimeForSpecificTz());
             insuranceForm.setCollectionDate(orderCreateService.getCurrentDateForSpecificTz());
-
 
             String middleName, optionalEmail, optionalNumber;
             middleName = mapper.getMiddleName();
             optionalNumber = mapper.getMobileNumber();
             optionalEmail = mapper.getOptionalEmail();
+
+            //Checking Optional fields
+            if(mapper.getInsuranceIdImage() != null) {
+                insuranceForm.setInsuranceIdImage(mapper.getInsuranceIdImage().getBytes(StandardCharsets.UTF_8));
+            }
+            if(mapper.getPersonalImage() != null) {
+                insuranceForm.setPersonalImage(mapper.getPersonalImage().getBytes(StandardCharsets.UTF_8));
+            }
+
             if(middleName != null) {
                 insuranceForm.setMiddleName(middleName);
             }
@@ -134,7 +141,7 @@ public class DataService {
             }
 
         } catch (Exception e) {
-            LOGGER.error("An error has occurred "+e);
+            LOGGER.error("An error has occurred ", e);
         }
         return insuranceForm;
     }

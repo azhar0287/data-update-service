@@ -57,7 +57,7 @@ public class InsuranceForm {
     @JsonIgnore
     @UpdateTimestamp
     private ZonedDateTime updatedAt;
-    
+
     private String collectionDate;
     private String collectionTime;
 }
