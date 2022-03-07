@@ -85,8 +85,9 @@ public class OrderCreateService {
         String dateString = "";
         try {
             Instant nowUtc = Instant.now();
-            ZoneId asiaSingapore = ZoneId.of("America/Chicago");
-            ZonedDateTime date = ZonedDateTime.ofInstant(nowUtc, asiaSingapore);            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MM-dd-YYYY");
+            ZoneId unitedStates = ZoneId.of("America/Chicago");
+            ZonedDateTime date = ZonedDateTime.ofInstant(nowUtc, unitedStates);
+            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MM-dd-YYYY");
             dateString = date.format(dateFormatter);
             LOGGER.info("Current date for order collection/etc: "+dateString);
         } catch (Exception e) {

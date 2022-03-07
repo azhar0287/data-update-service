@@ -1,5 +1,6 @@
 package com.example.dataupdateservice.insuranceform;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,6 +11,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
+import java.util.Date;
 
 @Entity
 @Getter @Setter @ToString @NoArgsConstructor
@@ -55,5 +57,7 @@ public class InsuranceForm {
     @JsonIgnore
     @UpdateTimestamp
     private ZonedDateTime updatedAt;
-
+    
+    private String collectionDate;
+    private String collectionTime;
 }

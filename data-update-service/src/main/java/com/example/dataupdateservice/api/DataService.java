@@ -29,6 +29,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.awt.print.Book;
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -87,7 +88,7 @@ public class DataService {
                 insuranceFormRepository.save(insuranceForm);
                 LOGGER.info("Patient Data has saved "+patientId);
             }
-            printDocLink.setMarquisPdfLink(orderResponse.getPdfUrl());
+           printDocLink.setMarquisPdfLink(orderResponse.getPdfUrl());
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
@@ -113,6 +114,10 @@ public class DataService {
             insuranceForm.setZipCode(mapper.getZipCode());
             insuranceForm.setPersonalImage(mapper.getPersonalImage().getBytes(StandardCharsets.UTF_8));
             insuranceForm.setInsuranceIdImage(mapper.getInsuranceIdImage().getBytes(StandardCharsets.UTF_8));
+
+            insuranceForm.setCollectionTime(orderCreateService.getCurrentTimeForSpecificTz());
+            insuranceForm.setCollectionDate(orderCreateService.getCurrentDateForSpecificTz());
+
 
             String middleName, optionalEmail, optionalNumber;
             middleName = mapper.getMiddleName();
@@ -263,7 +268,7 @@ public class DataService {
             Date currentDate = java.sql.Date.valueOf(today);
             List<PatientDataMapper> patientData = insuranceFormRepository.getDailyCountData(currentDate);
             for(int i=0; i<patientData.size(); i++) {
-                patientData.get(i).setPatientNo(i);
+                patientData.get(i).setPatientNo(i+1);
             }
 
             return new ResponseEntity(patientData, HttpStatus.OK);
@@ -283,8 +288,8 @@ public class DataService {
 
             List<Long> dailyCount = insuranceFormRepository.getDailyCount(currentDate);
             List<Long> weeklyCount = insuranceFormRepository.getWeeklyCount(weekDate, currentDate);
-            countDto.setDailyCount(dailyCount.size());
-            countDto.setWeeklyCount(weeklyCount.size());
+            countDto.setDailyCount(dailyCount.size()+1);
+            countDto.setWeeklyCount(weeklyCount.size()+1);
 
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);

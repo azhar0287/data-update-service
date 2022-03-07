@@ -21,7 +21,7 @@ public interface InsuranceFormRepository extends JpaRepository<InsuranceForm, Lo
     List<Long> getWeeklyCount(@Param("startDate") Date startDate, @Param("endDate") Date endDate);
 
 
-    @Query("Select new com.example.dataupdateservice.mappers.PatientDataMapper(form.firstName, form.lastName, form.email, form.mobileNumber, form.createdAt, form.gender, form.dob) FROM InsuranceForm form where DATE(form.createdAt)  =:startDate")
+    @Query("Select new com.example.dataupdateservice.mappers.PatientDataMapper(form.firstName, form.lastName, form.email, form.mobileNumber, form.collectionDate, form.collectionTime, form.gender, form.dob) FROM InsuranceForm form where DATE(form.createdAt)  =:startDate")
     List<PatientDataMapper> getDailyCountData(@Param("startDate") Date startDate);
 
 }

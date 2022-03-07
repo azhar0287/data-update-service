@@ -18,17 +18,19 @@ public class PatientDataMapper {
     public int patientNo;
     public String email;
     public String phoneNumber;
-    public Date collectionDate;
+    public String collectionDate;
+    public String collectionTime;
     public String gender;
     public String dob;
     public ZonedDateTime cltDate;
 
     public PatientDataMapper(String firstName, String lastName, String email, String phoneNumber,
-                             ZonedDateTime cltDate, String gender, LocalDate dob) {
+                             String collectionDate, String collectionTime, String gender, LocalDate dob) {
         this.name = firstName+" "+lastName;
         this.email = email;
         this.phoneNumber = phoneNumber;
-        this.cltDate = cltDate;
+        this.collectionDate = collectionDate;
+        this.collectionTime = collectionTime;
         this.gender = gender;
         final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("MM/dd/YYYY");
         this.dob = dob.format(DateTimeFormatter.ofPattern("MM/dd/YYYY"));
