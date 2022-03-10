@@ -274,6 +274,7 @@ public class DataService {
             LocalDate today = LocalDate.now();
             Date currentDate = java.sql.Date.valueOf(today);
             List<PatientDataMapper> patientData = insuranceFormRepository.getDailyCountData(currentDate);
+            if(patientData.size() > 0)
             for(int i=0; i<patientData.size(); i++) {
                 patientData.get(i).setPatientNo(i+1);
             }
