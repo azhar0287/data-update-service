@@ -296,8 +296,8 @@ public class DataService {
 
             List<Long> dailyCount = insuranceFormRepository.getDailyCount(currentDate);
             List<Long> weeklyCount = insuranceFormRepository.getWeeklyCount(weekDate, currentDate);
-            countDto.setDailyCount(dailyCount.size()+1);
-            countDto.setWeeklyCount(weeklyCount.size()+1);
+            countDto.setDailyCount(dailyCount.size());
+            countDto.setWeeklyCount(weeklyCount.size());
 
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
