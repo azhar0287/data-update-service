@@ -106,111 +106,97 @@ public class SeleniumService {
             WebElement newPage = driver.findElement(By.linkText("New Patient"));
             newPage.click();
 
-            Thread.sleep(2000);
+            Thread.sleep(1000);
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_ddlOrganization_ddlObj")));
             WebElement organization = driver.findElement(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_ddlOrganization_ddlObj"));
             organization.sendKeys("Sethi Labs Dallas");
 
-            Thread.sleep(3000);
-            //wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_ddlLocation_ddlObj")));
+            Thread.sleep(1500);
             driver.findElement(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_ddlLocation_ddlObj"));
             driver.findElement(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_ddlLocation_ddlObj")).sendKeys("Sethi Labs Dallas");
 
-            Thread.sleep(3000);
-            //wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_ddlPhysician_ddlObj")));
+            Thread.sleep(1500);
             driver.findElement(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_ddlPhysician_ddlObj")).click();
             driver.findElement(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_ddlPhysician_ddlObj")).sendKeys("McCoy, APRN Sandra");
 
-            Thread.sleep(1000);
-            //wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_txtFirstName")));
+            Thread.sleep(500);
             WebElement firstName = driver.findElement(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_txtFirstName"));
             firstName.sendKeys(mapper.getFirstName());
 
-            Thread.sleep(1000);
-            //wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_txtLastName")));
+            Thread.sleep(500);
             WebElement lastName = driver.findElement(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_txtLastName"));
             lastName.sendKeys(mapper.getLastName());
 
-            Thread.sleep(1000);
-            //wait.until(ExpectedConditions.visibilityOfElementLocated(By.name("ctl00$ctl00$ctl00$cphDefault$cphTemplate$cphTemplate$patientDetail$ddlGender$ddlObj")));
+            Thread.sleep(500);
             Select dropdown = new Select(driver.findElement(By.name("ctl00$ctl00$ctl00$cphDefault$cphTemplate$cphTemplate$patientDetail$ddlGender$ddlObj")));
             dropdown.selectByIndex(1);
 
-            Thread.sleep(1000);
-            //wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_txtAddressZip")));
+            Thread.sleep(500);
             driver.findElement(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_txtAddressZip")).click();
             driver.findElement(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_txtAddressZip")).sendKeys(mapper.getZipCode());
 
-            Thread.sleep(2000);
-            //wait.until(ExpectedConditions.visibilityOfElementLocated(By.name("ctl00$ctl00$ctl00$cphDefault$cphTemplate$cphTemplate$patientDetail$ddlRace$ddlObj")));
+            Thread.sleep(1000);
             Select race = new Select(driver.findElement(By.name("ctl00$ctl00$ctl00$cphDefault$cphTemplate$cphTemplate$patientDetail$ddlRace$ddlObj")));
             race.selectByIndex(7);
 
-            Thread.sleep(4000);
-            //wait.until(ExpectedConditions.visibilityOfElementLocated(By.name("ctl00$ctl00$ctl00$cphDefault$cphTemplate$cphTemplate$patientDetail$ddlEthnicity$ddlObj")));
+            Thread.sleep(2000);
             Select ethnicity = new Select(driver.findElement(By.name("ctl00$ctl00$ctl00$cphDefault$cphTemplate$cphTemplate$patientDetail$ddlEthnicity$ddlObj")));
             ethnicity.selectByIndex(3);
 
             Thread.sleep(2000);
-            //wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_txtEmailAddress")));
             driver.findElement(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_txtEmailAddress")).click();
             driver.findElement(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_txtEmailAddress")).sendKeys(mapper.getEmail() + "+" + new Random().nextDouble());
 
-            Thread.sleep(1000);
-            //wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_txtDOB")));
+            Thread.sleep(500);
             WebElement dob = driver.findElement(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_txtDOB"));
             dob.sendKeys(mapper.getDob().format(DateTimeFormatter.ofPattern("MM/dd/YYYY")));
 
-            Thread.sleep(2000);
-            //wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_txtAddressStreet")));
+            Thread.sleep(1000);
             driver.findElement(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_txtAddressStreet")).click();
             driver.findElement(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_txtAddressStreet")).sendKeys(mapper.getStreet());
 
-            Thread.sleep(2000);
-            //wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_txtHomePhone")));
+            Thread.sleep(1000);
             driver.findElement(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_txtHomePhone")).click();
             driver.findElement(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_txtHomePhone")).sendKeys(mapper.getMobileNumber());
 
-            Thread.sleep(1000);
+            Thread.sleep(500);
             WebElement updatePatientButton = driver.findElement(By.id("cphDefault_cphTemplate_cphTemplate_btnSave"));
-            //wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("cphDefault_cphTemplate_cphTemplate_btnSave")));
-            Thread.sleep(1000);
+            Thread.sleep(500);
             updatePatientButton.click();
 
             LOGGER.info("Update Patient Clicked ");
 
-            Thread.sleep(10000);
-            //wait.until(ExpectedConditions.visibilityOfElementLocated(new By.ByXPath("//*[@id='divPatientInsurance']/a/div[3]")));
+            Thread.sleep(7000);
             driver.findElement(new By.ByXPath("//*[@id='divPatientInsurance']/a/div[3]")).click();
             driver.findElement(By.className("addlink")).click();
             LOGGER.info("Add link  ");
 
-            Thread.sleep(5000);
+            Thread.sleep(3000);
             WebElement iframe1 = driver.findElement(new By.ByXPath("//*[@id='modalIframe']"));
             driver.switchTo().frame(iframe1);
             LOGGER.info("Switch for first frame  ");
 
-            Thread.sleep(3000);
+            Thread.sleep(2000);
             Select sel = new Select(driver.findElement(By.id("cphTemplate_patientinsuranceDetail_ddlInsurancePriority_ddlObj")));
             sel.selectByVisibleText("Primary");
-            Thread.sleep(5000);
+            Thread.sleep(3000);
             LOGGER.info("Select primary");
             driver.findElement(By.className("searchlink")).click();
 
-            Thread.sleep(3000);
+            Thread.sleep(1500);
             WebElement iframe2 = driver.findElement(new By.ByXPath("//*[@id='modalIframe']"));
             driver.switchTo().frame(iframe2);
 
             LOGGER.info("Switch for 2nd Frame  ");
-            Thread.sleep(10000);
+            Thread.sleep(7000);
             driver.findElement(By.id("cphTemplate_insuranceplanlistView_gvSearch_txtSearch")).sendKeys("hrsa");
             driver.findElement(By.id("cphTemplate_insuranceplanlistView_gvSearch_txtSearch")).sendKeys(Keys.ENTER);
 
             LOGGER.info("Hrsa added  ");
-            Thread.sleep(5000);
+            Thread.sleep(3000);
             driver.findElement(new By.ByClassName("selectlink")).click();
 
-            Thread.sleep(5000);
+            Thread.sleep(3000);
             driver.switchTo().parentFrame();
             LOGGER.info("Save button for insurance ");
             driver.findElement(By.id("cphTemplate_btnSave")).click();
@@ -222,23 +208,20 @@ public class SeleniumService {
 
 
             LOGGER.info("Switch for Parent frame  ");
-            Thread.sleep(5000);
-            //driver.findElement(By.linkText("Create Order")).click();
-            //wait = new WebDriverWait(driver, 180);
-            //wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("addorderlink")));
+            Thread.sleep(3000);
             driver.findElement(By.className("addorderlink")).click();
             LOGGER.info("Add order Link buttonn clicked  ");
-            Thread.sleep(2000);
+            Thread.sleep(1000);
             sel = new Select(driver.findElement(By.id("cphDefault_cphTemplate_laborderDetail_ddlCustomField1")));
             sel.selectByVisibleText("CPT-Saline");
-            Thread.sleep(2000);
+            Thread.sleep(1000);
 
             sel = new Select(driver.findElement(By.id("cphDefault_cphTemplate_laborderDetail_ddlCustomField8")));
             sel.selectByVisibleText("Nasopharyngeal (NP)");
-            Thread.sleep(5000);
+            Thread.sleep(3000);
 
             driver.findElement(By.id("cphDefault_cphTemplate_laborderDetail_lnkAddDiagnosisCode")).click();
-            Thread.sleep(3000);
+            Thread.sleep(2000);
             LOGGER.info("Diagnosis Code selected ");
 
             WebElement iframe3 = driver.findElement(new By.ByXPath("//*[@id='modalIframe']"));
@@ -246,17 +229,17 @@ public class SeleniumService {
             Thread.sleep(1000);
 
             driver.findElement(By.id("cphTemplate_laborderdiagnosiscodeDetail_gvDiagnosisCode_chkDiagnosisCodeMap_1")).click();
-            Thread.sleep(5000);
+            Thread.sleep(3000);
 
             driver.findElement((By.id("cphTemplate_laborderdiagnosiscodeDetail_gvDiagnosisCode_chkDiagnosisCodeMap_0"))).click();
-            Thread.sleep(5000);
+            Thread.sleep(3000);
             LOGGER.info("Diagnosis added ");
 
             driver.findElement(By.id("cphTemplate_btnClose")).click();
 
-            Thread.sleep(3000);
-            driver.switchTo().parentFrame();
             Thread.sleep(2000);
+            driver.switchTo().parentFrame();
+            Thread.sleep(1000);
 
             ////////////////
             WebElement req = driver.findElement(By.id("cphDefault_cphTemplate_laborderDetail_txtRequisitionDateTime"));
@@ -264,60 +247,32 @@ public class SeleniumService {
 
             driver.findElement((By.id("cphDefault_cphTemplate_laborderDetail_txtCollectionDateTime"))).sendKeys(time);
 
-            Thread.sleep(3000);
+            Thread.sleep(1500);
             driver.findElement(By.id("cphDefault_cphTemplate_laborderDetail_orderTests_gvOrderPanels_chkOrderTest_0")).click();
-            Thread.sleep(5000);
+            Thread.sleep(3000);
             driver.findElement(By.id("cphDefault_cphTemplate_laborderDetail_btnCreateOrder")).click();
 
-            Thread.sleep(5000);
+            Thread.sleep(3000);
             WebElement iframe4 = driver.findElement(new By.ByXPath("//*[@id='modalIframe']"));
             driver.switchTo().frame(iframe4);
 
             LOGGER.info("Test added ");
 
-            Thread.sleep(4000);
+            Thread.sleep(2000);
             //wait.until(ExpectedConditions.visibilityOfElementLocated(By.linkText("Print Requisition")));
             String pdfLink = driver.findElement(By.linkText("Print Requisition")).getAttribute("href");
             LOGGER.info("Pdf Link " + pdfLink);
             driver.findElement(By.id("cphTemplate_lnkPrintRequisition")).click();
-            Thread.sleep(2000);
+            Thread.sleep(1000);
 
             wait.until(ExpectedConditions.elementToBeClickable(By.id("cphTemplate_lnkPrintLabel")));
             String labelLink = driver.findElement(By.id("cphTemplate_lnkPrintLabel")).getAttribute("href");
             LOGGER.info("Label Link " + labelLink);
+            Thread.sleep(1000);
+            driver.findElement(By.id("cphTemplate_lnkPrintLabel")).click();
             Thread.sleep(2000);
             driver.findElement(By.id("cphTemplate_lnkPrintLabel")).click();
-            Thread.sleep(4000);
-            driver.findElement(By.id("cphTemplate_lnkPrintLabel")).click();
 
-            /*
-
-            //Declare as global variables
-            String parent_tab;
-            String child_tab;
-            List<String> urls = new ArrayList<>();
-
-            read.sleep(3000);
-
-            Set<String> s1 = driver.getWindowHandles();
-            Iterator<String> i1 = s1.iterator();
-            LOGGER.info("Tabs qty "+s1.size());
-            while (i1.hasNext()) {
-
-                child_tab = i1.next();
-                if ( !parent_tab.equalsIgnoreCase(child_tab)) {
-                    driver.switchTo().window(child_tab);
-                    String currentURL = driver.getCurrentUrl();
-                    LOGGER.info("Current url: "+ currentURL);
-                    if(currentURL.contains("label.ashx")) {
-                        printDocLink.setFirstToxLabelLink(currentURL);
-                        break;
-                    }
-                } else {
-                    System.out.println("Does not match");
-                }
-            }
-            */
             LOGGER.info("FirstTox Form has submitted successfully");
             printDocLink.setFirstToxPdfLink(pdfLink);
             printDocLink.setPdf(this.getLablePdf());
@@ -331,8 +286,6 @@ public class SeleniumService {
         try {
             Path pdfPath = Paths.get("/data/servers/services/label.pdf");
             //  Path pdfPath = Paths.get("C:/Users/admin/Desktop/data/webreq.pdf");
-
-            //C:\Users\admin\Desktop\data
             pdf = Files.readAllBytes(pdfPath);
             LOGGER.info("pdf content" + pdf);
 
