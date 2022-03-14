@@ -100,7 +100,7 @@ public class SeleniumService {
             LOGGER.info("Logged in Successfully ");
 
             WebDriverWait wait = new WebDriverWait(driver, 120);// 1 minute
-            //wait.until(ExpectedConditions.visibilityOfElementLocated(new By.ByLinkText("New Patient")));
+            wait.until(ExpectedConditions.visibilityOfElementLocated(new By.ByLinkText("New Patient")));
             WebElement newPage = driver.findElement(By.linkText("New Patient"));
             newPage.click();
 
