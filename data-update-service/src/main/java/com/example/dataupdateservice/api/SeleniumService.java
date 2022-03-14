@@ -66,17 +66,13 @@ public class SeleniumService {
         options.addArguments("start-maximized"); // open Browser in maximized mode
         options.addArguments("disable-infobars");
         options.addArguments("--disable-extensions"); // disabling extensions
-        //options.addArguments("--disable-gpu"); // applicable to windows os only
         options.addArguments("--disable-dev-shm-usage"); // overcome limited resource problems
         options.addArguments("--window-size=1920x1080"); //I added this
         options.addArguments("disable-popup-blocking");
         options.addArguments("--disable-notifications");
-       // options.setPageLoadStrategy(PageLoadStrategy.NORMAL);
         options.addArguments("--disable-web-security");
         options.addArguments("--use-fake-ui-for-media-stream");
-
         options.merge(capabilities);
-
         return options;
     }
 
@@ -96,18 +92,20 @@ public class SeleniumService {
     }
 
     public PrintDocLink processForm(InsuranceFormMapper mapper) throws InterruptedException {
+        Long startTime=System.currentTimeMillis();
         String response = this.doLogin();
         PrintDocLink printDocLink = new PrintDocLink();
+
         if (response.equalsIgnoreCase("FirsTox")) {
             LOGGER.info("Logged in Successfully ");
 
             WebDriverWait wait = new WebDriverWait(driver, 120);// 1 minute
-            wait.until(ExpectedConditions.visibilityOfElementLocated(new By.ByLinkText("New Patient")));
+            //wait.until(ExpectedConditions.visibilityOfElementLocated(new By.ByLinkText("New Patient")));
             WebElement newPage = driver.findElement(By.linkText("New Patient"));
             newPage.click();
 
             Thread.sleep(1000);
-            wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_ddlOrganization_ddlObj")));
+            //wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_ddlOrganization_ddlObj")));
             WebElement organization = driver.findElement(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_ddlOrganization_ddlObj"));
             organization.sendKeys("Sethi Labs Dallas");
 
@@ -276,6 +274,11 @@ public class SeleniumService {
             LOGGER.info("FirstTox Form has submitted successfully");
             printDocLink.setFirstToxPdfLink(pdfLink);
             printDocLink.setPdf(this.getLablePdf());
+
+            Long endTime=System.currentTimeMillis();
+            Long finalTime= (endTime-startTime);
+            System.out.println("Time Consumed= "+(finalTime/1000)/60 +"min");
+
             driver.quit();
         }
         return printDocLink;
@@ -287,7 +290,7 @@ public class SeleniumService {
             Path pdfPath = Paths.get("/data/servers/services/label.pdf");
             //  Path pdfPath = Paths.get("C:/Users/admin/Desktop/data/webreq.pdf");
             pdf = Files.readAllBytes(pdfPath);
-            LOGGER.info("pdf content" + pdf);
+            LOGGER.info("pdf content has reached");
 
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
