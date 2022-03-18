@@ -1,4 +1,4 @@
-package com.example.dataupdateservice.insuranceform;
+package com.example.dataupdateservice.order;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
@@ -14,7 +14,7 @@ import java.time.ZonedDateTime;
 
 @Entity
 @Getter @Setter @ToString @NoArgsConstructor
-public class InsuranceForm {
+public class PatientOrder {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

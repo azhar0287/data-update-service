@@ -1,9 +1,9 @@
 package com.example.dataupdateservice.api;
 
 import com.example.dataupdateservice.feign.FeignClientService;
-import com.example.dataupdateservice.insuranceform.InsuranceForm;
+import com.example.dataupdateservice.order.PatientOrder;
 
-import com.example.dataupdateservice.insuranceform.InsuranceFormRepository;
+import com.example.dataupdateservice.order.PatientOrderRepository;
 import com.example.dataupdateservice.mappers.*;
 import com.example.dataupdateservice.order.OrderMapper;
 import com.example.dataupdateservice.response.DefaultResponse;
@@ -12,33 +12,22 @@ import com.example.dataupdateservice.user.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
-import net.bytebuddy.TypeCache;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-import java.awt.print.Book;
 import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
-
-import static org.springframework.data.domain.Sort.Direction.ASC;
-import static org.springframework.data.domain.Sort.Direction.DESC;
 
 
 @Service
@@ -49,7 +38,7 @@ public class DataService {
     @Autowired
     UserRepository userRepository;
     @Autowired
-    InsuranceFormRepository insuranceFormRepository;
+    PatientOrderRepository patientOrderRepository;
     @Autowired
     FeignClientService feignClientService;
     @Autowired
@@ -79,13 +68,13 @@ public class DataService {
         OrderResponse orderResponse = null;
         PrintDocLink printDocLink = new PrintDocLink();
         try {
-            InsuranceForm insuranceForm = this.mapFormData(mapper);
+            PatientOrder patientOrder = this.mapFormData(mapper);
             orderResponse = this.sendDataToMarques(mapper);
             String patientId = orderResponse.getPatientId();
             if(patientId != null) {
-                insuranceForm.setPatientId(patientId);
-                insuranceForm.setOrderNumber(orderResponse.getOrderNumber());
-                insuranceFormRepository.save(insuranceForm);
+                patientOrder.setPatientId(patientId);
+                patientOrder.setOrderNumber(orderResponse.getOrderNumber());
+                patientOrderRepository.save(patientOrder);
                 LOGGER.info("Patient Data has saved "+patientId);
             }
            printDocLink.setMarquisPdfLink(orderResponse.getPdfUrl());
@@ -96,26 +85,27 @@ public class DataService {
     }
 
 
-    public InsuranceForm mapFormData(InsuranceFormMapper mapper) {
-        InsuranceForm insuranceForm = new InsuranceForm();
+    public PatientOrder mapFormData(InsuranceFormMapper mapper) {
+        PatientOrder patientOrder = new PatientOrder();
         try {
-            insuranceForm.setFirstName(mapper.getFirstName());
-            insuranceForm.setLastName(mapper.getLastName());
-            insuranceForm.setDob(mapper.getDob());
-            insuranceForm.setGender(mapper.getGender());
-            insuranceForm.setPassport(mapper.getPassport());
-            insuranceForm.setMobileNumber(mapper.getMobileNumber());
-            insuranceForm.setEmail(mapper.getEmail());
-            insuranceForm.setState(mapper.getState());
-            insuranceForm.setStreet(mapper.getStreet());
-            insuranceForm.setCity(mapper.getCity());
-            insuranceForm.setZipCode(mapper.getZipCode());
+            patientOrder.setFirstName(mapper.getFirstName());
+            patientOrder.setLastName(mapper.getLastName());
+            patientOrder.setDob(mapper.getDob());
+            patientOrder.setGender(mapper.getGender());
+            patientOrder.setPassport(mapper.getPassport());
+            patientOrder.setMobileNumber(mapper.getMobileNumber());
+            patientOrder.setEmail(mapper.getEmail());
+            patientOrder.setState(mapper.getState());
+            patientOrder.setStreet(mapper.getStreet());
+            patientOrder.setCity(mapper.getCity());
+            patientOrder.setZipCode(mapper.getZipCode());
+            patientOrder.setInsuranceName(mapper.getInsuranceName());
+            patientOrder.setInsuranceNumber(mapper.getInsuranceNumber());
+            patientOrder.setRace("Other");
+            patientOrder.setEthnicity("Other");
 
-            insuranceForm.setRace("Other");
-            insuranceForm.setEthnicity("Other");
-
-            insuranceForm.setCollectionTime(orderCreateService.getCurrentTimeForSpecificTz());
-            insuranceForm.setCollectionDate(orderCreateService.getCurrentDateForSpecificTz());
+            patientOrder.setCollectionTime(orderCreateService.getCurrentTimeForSpecificTz());
+            patientOrder.setCollectionDate(orderCreateService.getCurrentDateForSpecificTz());
 
             String middleName, optionalEmail, optionalNumber;
             middleName = mapper.getMiddleName();
@@ -124,26 +114,26 @@ public class DataService {
 
             //Checking Optional fields
             if(mapper.getInsuranceIdImage() != null) {
-                insuranceForm.setInsuranceIdImage(mapper.getInsuranceIdImage().getBytes(StandardCharsets.UTF_8));
+                patientOrder.setInsuranceIdImage(mapper.getInsuranceIdImage().getBytes(StandardCharsets.UTF_8));
             }
             if(mapper.getPersonalImage() != null) {
-                insuranceForm.setPersonalImage(mapper.getPersonalImage().getBytes(StandardCharsets.UTF_8));
+                patientOrder.setPersonalImage(mapper.getPersonalImage().getBytes(StandardCharsets.UTF_8));
             }
 
             if(middleName != null) {
-                insuranceForm.setMiddleName(middleName);
+                patientOrder.setMiddleName(middleName);
             }
             if(optionalEmail != null) {
-                insuranceForm.setOptionalEmail(optionalEmail);
+                patientOrder.setOptionalEmail(optionalEmail);
             }
             if(optionalNumber != null) {
-                insuranceForm.setOptionalMobile(optionalNumber);
+                patientOrder.setOptionalMobile(optionalNumber);
             }
 
         } catch (Exception e) {
             LOGGER.error("An error has occurred ", e);
         }
-        return insuranceForm;
+        return patientOrder;
     }
 
     public ResponseEntity isAuthenticated(UserDto userDto) {
@@ -273,7 +263,7 @@ public class DataService {
         try {
             LocalDate today = LocalDate.now();
             Date currentDate = java.sql.Date.valueOf(today);
-            List<PatientDataMapper> patientData = insuranceFormRepository.getDailyCountData(currentDate);
+            List<PatientDataMapper> patientData = patientOrderRepository.getDailyCountData(currentDate);
             if(patientData.size() > 0)
             for(int i=0; i<patientData.size(); i++) {
                 patientData.get(i).setPatientNo(i+1);
@@ -294,8 +284,8 @@ public class DataService {
             LocalDate endDate = today.minus(1, ChronoUnit.WEEKS);
             Date weekDate = java.sql.Date.valueOf(endDate);
 
-            List<Long> dailyCount = insuranceFormRepository.getDailyCount(currentDate);
-            List<Long> weeklyCount = insuranceFormRepository.getWeeklyCount(weekDate, currentDate);
+            List<Long> dailyCount = patientOrderRepository.getDailyCount(currentDate);
+            List<Long> weeklyCount = patientOrderRepository.getWeeklyCount(weekDate, currentDate);
             countDto.setDailyCount(dailyCount.size());
             countDto.setWeeklyCount(weeklyCount.size());
 

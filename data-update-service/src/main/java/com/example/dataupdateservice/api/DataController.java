@@ -12,7 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
-@RequestMapping(value = {"/insuranceData"})
+@RequestMapping(value = {"/PatientOrder"})
 @CrossOrigin("*")
 public class DataController {
 
