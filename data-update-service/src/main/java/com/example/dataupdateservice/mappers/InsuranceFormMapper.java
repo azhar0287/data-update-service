@@ -32,5 +32,7 @@ public class InsuranceFormMapper {
     private String optionalMobile;
     private String personalImage;
     private String insuranceIdImage;
+    private String insuranceNumber;
+    private String insuranceName;
 
 }

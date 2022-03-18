@@ -60,4 +60,8 @@ public class InsuranceForm {
 
     private String collectionDate;
     private String collectionTime;
+
+    private String insuranceNumber;
+    private String insuranceName;
+
 }
