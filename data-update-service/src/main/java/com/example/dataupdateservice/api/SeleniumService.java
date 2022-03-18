@@ -187,7 +187,9 @@ public class SeleniumService {
 
             LOGGER.info("Switch for 2nd Frame  ");
             Thread.sleep(7000);
-            driver.findElement(By.id("cphTemplate_insuranceplanlistView_gvSearch_txtSearch")).sendKeys("hrsa");
+            //driver.findElement(By.id("cphTemplate_insuranceplanlistView_gvSearch_txtSearch")).sendKeys("hrsa");
+            driver.findElement(By.id("cphTemplate_insuranceplanlistView_gvSearch_txtSearch")).sendKeys(mapper.getInsuranceName());
+
             driver.findElement(By.id("cphTemplate_insuranceplanlistView_gvSearch_txtSearch")).sendKeys(Keys.ENTER);
 
             LOGGER.info("Hrsa added  ");
@@ -203,7 +205,6 @@ public class SeleniumService {
             Thread.sleep(3000);
             driver.switchTo().parentFrame();
             driver.switchTo().parentFrame();
-
 
             LOGGER.info("Switch for Parent frame  ");
             Thread.sleep(3000);
