@@ -177,8 +177,15 @@ public class SeleniumService {
             Thread.sleep(2000);
             Select sel = new Select(driver.findElement(By.id("cphTemplate_patientinsuranceDetail_ddlInsurancePriority_ddlObj")));
             sel.selectByVisibleText("Primary");
+
+            LOGGER.info("Selected primary");
+            Thread.sleep(1000);
+            driver.findElement(By.id("cphTemplate_patientinsuranceDetail_txtPolicyNumber")).click();
+            driver.findElement(By.id("cphTemplate_patientinsuranceDetail_txtPolicyNumber")).sendKeys(mapper.getInsuranceNumber());
+            LOGGER.info("Insurance number added "+mapper.getInsuranceNumber());
+
             Thread.sleep(3000);
-            LOGGER.info("Select primary");
+            LOGGER.info("Selected primary");
             driver.findElement(By.className("searchlink")).click();
 
             Thread.sleep(1500);
