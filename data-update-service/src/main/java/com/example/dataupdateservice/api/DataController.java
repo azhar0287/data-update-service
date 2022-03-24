@@ -1,12 +1,11 @@
 package com.example.dataupdateservice.api;
 
+import com.example.dataupdateservice.mappers.InsuranceDataMapper;
 import com.example.dataupdateservice.mappers.InsuranceFormMapper;
 import com.example.dataupdateservice.mappers.UserDto;
-import com.example.dataupdateservice.response.DefaultResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -67,5 +66,19 @@ public class DataController {
     public ResponseEntity readPdf() {
         ResponseEntity response = seleniumService.readPdf();
         return response;
+    }
+
+    @PostMapping(value = "/insuranceData/fill")
+    @ResponseBody
+    public ResponseEntity postInsuranceData(@RequestBody InsuranceDataMapper insuranceData) {
+        LOGGER.info("Request received for fill insurance data");
+        return dataService.fillInsuranceData(insuranceData);
+    }
+
+    @GetMapping(value = "/insurance/list")
+    @ResponseBody
+    public ResponseEntity postInsuranceData() {
+        LOGGER.info("Request received for insurance name list");
+        return dataService.getInsuranceList();
     }
 }

@@ -191,8 +191,7 @@ public class SeleniumService {
             Thread.sleep(1500);
             WebElement iframe2 = driver.findElement(new By.ByXPath("//*[@id='modalIframe']"));
             driver.switchTo().frame(iframe2);
-
-            LOGGER.info("Switch for 2nd Frame  ");
+            LOGGER.info("Switch for 2nd Frame");
             Thread.sleep(7000);
             //driver.findElement(By.id("cphTemplate_insuranceplanlistView_gvSearch_txtSearch")).sendKeys("hrsa");
             driver.findElement(By.id("cphTemplate_insuranceplanlistView_gvSearch_txtSearch")).sendKeys(mapper.getInsuranceName());

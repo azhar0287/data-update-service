@@ -1,6 +1,8 @@
 package com.example.dataupdateservice.api;
 
 import com.example.dataupdateservice.feign.FeignClientService;
+import com.example.dataupdateservice.insurancedata.InsuranceNameList;
+import com.example.dataupdateservice.insurancedata.InsuranceNameListRepository;
 import com.example.dataupdateservice.order.PatientOrder;
 
 import com.example.dataupdateservice.order.PatientOrderRepository;
@@ -26,8 +28,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 
 @Service
@@ -45,6 +46,9 @@ public class DataService {
     SeleniumService seleniumService;
     @Autowired
     OrderCreateService orderCreateService;
+    @Autowired
+    InsuranceNameListRepository insuranceDataRepository;
+
 
     @Value("${userToken}")
     String user;
@@ -294,4 +298,36 @@ public class DataService {
         }
         return new ResponseEntity<>(countDto, HttpStatus.OK);
    }
+
+    ResponseEntity fillInsuranceData(InsuranceDataMapper insuranceData) {
+        int size = insuranceData.getNames().size();
+        try {
+            InsuranceNameList insurance;
+            Set<InsuranceNameList> entityList = new HashSet<>();
+            for (String name:insuranceData.getNames()) {
+                insurance = new InsuranceNameList();
+                insurance.setName(name.trim());
+                insurance.setUuid(UUID.randomUUID().toString());
+                entityList.add(insurance);
+            }
+            insuranceDataRepository.saveAll(entityList);
+            LOGGER.info("Insurance data has saved, size: "+size);
+
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+        return new ResponseEntity(new DefaultResponse("Success","Insurance list has saved size: "+size,"S003"),HttpStatus.OK);
+    }
+
+    ResponseEntity getInsuranceList() {
+        List<String> insuranceList = new LinkedList<>();
+        try {
+            insuranceList = insuranceDataRepository.getInsuranceList();
+            LOGGER.info("Insurance data has saved, size: "+insuranceList.size());
+
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+        return new ResponseEntity(insuranceList, HttpStatus.OK);
+    }
 }
