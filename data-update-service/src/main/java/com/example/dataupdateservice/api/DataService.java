@@ -14,6 +14,11 @@ import com.example.dataupdateservice.user.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
+import com.google.zxing.BinaryBitmap;
+import com.google.zxing.MultiFormatReader;
+import com.google.zxing.Result;
+import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
+import com.google.zxing.common.HybridBinarizer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +29,8 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import javax.imageio.ImageIO;
+import java.io.FileInputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -48,6 +55,8 @@ public class DataService {
     OrderCreateService orderCreateService;
     @Autowired
     InsuranceNameListRepository insuranceDataRepository;
+    @Autowired
+    QRCodeGeneratorService qrCodeGeneratorService;
 
 
     @Value("${userToken}")
@@ -107,6 +116,9 @@ public class DataService {
             patientOrder.setInsuranceNumber(mapper.getInsuranceNumber());
             patientOrder.setRace("Other");
             patientOrder.setEthnicity("Other");
+            String uuid = UUID.randomUUID().toString();
+            patientOrder.setUuid(uuid); //Unique submission Id
+            patientOrder.setSubmissionQRC(qrCodeGeneratorService.getQRCodeImage(uuid,250,250));
 
             patientOrder.setCollectionTime(orderCreateService.getCurrentTimeForSpecificTz());
             patientOrder.setCollectionDate(orderCreateService.getCurrentDateForSpecificTz());
@@ -329,5 +341,26 @@ public class DataService {
             LOGGER.error(e.getMessage(), e);
         }
         return new ResponseEntity(insuranceList, HttpStatus.OK);
+    }
+
+    ResponseEntity getQRCode() {
+        String text="2626262";
+        byte[] image;
+        String QR_CODE_IMAGE_PATH = "./src/main/resources/QRCode.png";
+
+        try {
+            image = qrCodeGeneratorService.getQRCodeImage(text,250,250);
+
+            // Generate and Save Qr Code Image in static/image folder
+            qrCodeGeneratorService.generateQRCodeImage(text,250,250, QR_CODE_IMAGE_PATH);
+            String qrcode = Base64.getEncoder().encodeToString(image);
+
+            String s = new String(image, StandardCharsets.UTF_8);
+            LOGGER.info("Text   "+text);
+
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+       return null;
     }
 }
