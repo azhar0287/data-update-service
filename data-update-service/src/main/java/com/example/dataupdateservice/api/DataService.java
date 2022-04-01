@@ -74,7 +74,7 @@ public class DataService {
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
-       return new ResponseEntity<>(new DefaultResponse("Success", "Form Data has save successfully", printDocLink), HttpStatus.OK);
+       return new ResponseEntity<>(new DefaultResponse("Success", "Firstox Form Data has saved successfully", printDocLink), HttpStatus.OK);
     }
 
     public ResponseEntity addFormDataForMarquis(InsuranceFormMapper mapper) {
@@ -94,7 +94,7 @@ public class DataService {
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
-        return new ResponseEntity<>(new DefaultResponse("Success", "Form Data has save successfully", printDocLink), HttpStatus.OK);
+        return new ResponseEntity<>(new DefaultResponse("Success", "Form data for Marquis has saved successfully", printDocLink), HttpStatus.OK);
     }
 
 
@@ -118,7 +118,7 @@ public class DataService {
             patientOrder.setEthnicity("Other");
             String uuid = UUID.randomUUID().toString();
             patientOrder.setUuid(uuid); //Unique submission Id
-            patientOrder.setSubmissionQRC(qrCodeGeneratorService.getQRCodeImage(uuid,250,250));
+            //patientOrder.setSubmissionQRC(qrCodeGeneratorService.getQRCodeImage(uuid,250,250));
 
             patientOrder.setCollectionTime(orderCreateService.getCurrentTimeForSpecificTz());
             patientOrder.setCollectionDate(orderCreateService.getCurrentDateForSpecificTz());
