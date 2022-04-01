@@ -22,4 +22,6 @@ public interface PatientOrderRepository extends JpaRepository<PatientOrder, Long
     @Query("Select new com.example.dataupdateservice.mappers.PatientDataMapper(form.firstName, form.lastName, form.email, form.mobileNumber, form.collectionDate, form.collectionTime, form.gender, form.dob) FROM PatientOrder form where DATE(form.createdAt)  =:startDate")
     List<PatientDataMapper> getDailyCountData(@Param("startDate") Date startDate);
 
+    @Query("SELECT order FROM PatientOrder order where order.uuid =:uuid")
+    PatientOrder getOrderByUuid(@Param("uuid") String uuid);
 }

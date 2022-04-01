@@ -34,5 +34,6 @@ public class InsuranceFormMapper {
     private String insuranceIdImage;
     private String insuranceNumber;
     private String insuranceName;
+    private String uuid;
 
 }

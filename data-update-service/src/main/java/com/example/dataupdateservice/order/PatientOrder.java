@@ -40,6 +40,7 @@ public class PatientOrder {
     private String optionalMobile;
     private String patientId;
     private String orderNumber;
+    private String uuid;
 
     @Lob
     @Basic(fetch = FetchType.EAGER)
@@ -48,6 +49,10 @@ public class PatientOrder {
     @Lob
     @Basic(fetch = FetchType.EAGER)
     private byte[] insuranceIdImage;
+
+    @Lob
+    @Basic(fetch = FetchType.EAGER)
+    private byte[] submissionQRC;
 
     @JsonIgnore
     @CreationTimestamp

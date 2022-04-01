@@ -46,7 +46,8 @@ dependencies {
     implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.4.1'
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-ribbon'
 
-
+    compile "com.google.zxing:core:3.4.0"
+    compile "com.google.zxing:javase:3.4.0"
 
 }
 

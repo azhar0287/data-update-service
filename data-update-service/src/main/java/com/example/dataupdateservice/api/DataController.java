@@ -81,4 +81,12 @@ public class DataController {
         LOGGER.info("Request received for insurance name list");
         return dataService.getInsuranceList();
     }
+
+    @GetMapping(value = "/form/qrcode")
+    @ResponseBody
+    public ResponseEntity getQrCodeForSubmission() {
+        LOGGER.info("Request received for insurance name list");
+        return dataService.getQRCode();
+    }
+
 }

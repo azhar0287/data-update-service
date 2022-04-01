@@ -263,7 +263,7 @@ public class SeleniumService {
 
             LOGGER.info("Test added ");
 
-            Thread.sleep(2000);
+            Thread.sleep(3000);
             //wait.until(ExpectedConditions.visibilityOfElementLocated(By.linkText("Print Requisition")));
             String pdfLink = driver.findElement(By.linkText("Print Requisition")).getAttribute("href");
             LOGGER.info("Pdf Link " + pdfLink);
