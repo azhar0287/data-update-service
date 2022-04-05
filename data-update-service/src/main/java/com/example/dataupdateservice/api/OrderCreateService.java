@@ -213,7 +213,7 @@ public class OrderCreateService {
             map.add("idob", mapper.getDob().format(DateTimeFormatter.ofPattern("MM/dd/YYYY")));
             map.add("isex", this.getSexType(mapper.getGender()));
             map.add("outputformat", "JSON");
-            map.add("insid1", "11111111"); //Insurance Policy
+            map.add("insid1", "111111111"); //Insurance Policy
             map.add("iaddr1", mapper.getStreet());
             map.add("iaddr2", mapper.getCity());
             map.add("istate", mapper.getState());
