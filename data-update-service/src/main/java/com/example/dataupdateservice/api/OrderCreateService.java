@@ -53,9 +53,9 @@ public class OrderCreateService {
             order.setIstate(mapper.getState());
             order.setCltins("on");
             order.setCltins2("on");
-            order.setIns1("4051");
-            order.setInsname1("COVID19 HRSA Uninsured Testing");
-            order.setInsid1("111111111");
+            order.setIns1("3643");
+            order.setInsname1("MISSING INSURANCE INFO");
+            order.setInsid1(mapper.getInsuranceNumber());
             order.setRelation("SE");
             order.setBillclient("NO");
 
@@ -156,7 +156,7 @@ public class OrderCreateService {
     boolean processOrderSaveTest(String patientId, String orderNumber, InsuranceFormMapper mapper) {
         try {
             MultiValueMap<String, String> map= new LinkedMultiValueMap<>();
-            map.add("billtype", "4051");
+            map.add("billtype", "3643");
             map.add("ordphys", "1588");
             map.add("ordclt", "1551");
             map.add("orderdate", this.getCurrentDate());
@@ -300,12 +300,13 @@ public class OrderCreateService {
     }
 
     String getSexType(String sexType) {
-        if(sexType.equalsIgnoreCase("MALE")) {
-            return "M";
+        String gender = "";
+        if(sexType.equalsIgnoreCase("Male")) {
+            gender =  "M";
         }
-        if(sexType.equalsIgnoreCase("FEMALE")) {
-            return "F";
+        if(sexType.equalsIgnoreCase("Female")) {
+            gender = "F";
         }
-        return "M";
+        return gender;
     }
 }
