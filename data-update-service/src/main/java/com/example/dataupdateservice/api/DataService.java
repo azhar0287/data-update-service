@@ -224,7 +224,6 @@ public class DataService {
                     newPatientId = patientResponseMapper.getPatid();
                 }
             } else {
-
                 if(patientResponseMapper.getSuccess().equalsIgnoreCase("true") && patientResponseMapper.getMsg().equalsIgnoreCase("OK")) {
                     newPatientId = patientResponseMapper.getPatid();
                 }

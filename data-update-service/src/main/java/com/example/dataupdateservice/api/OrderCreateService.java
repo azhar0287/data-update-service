@@ -204,16 +204,15 @@ public class OrderCreateService {
             //map.add("json", json);
             map.add("ordernum", "NEW");
             map.add("housecall", "NO");
-            map.add("insname1", "COVID19 HRSA Uninsured Testing");
-            map.add("ins1", "4051");
+            map.add("insname1", "MISSING INSURANCE INFO");
+            map.add("ins1", "3643");
             map.add("cltins", "on");
             map.add("ifname", mapper.getFirstName());
-
             map.add("ilname", mapper.getLastName());
             map.add("idob", mapper.getDob().format(DateTimeFormatter.ofPattern("MM/dd/YYYY")));
             map.add("isex", this.getSexType(mapper.getGender()));
             map.add("outputformat", "JSON");
-            map.add("insid1", "111111111"); //Insurance Policy
+            map.add("insid1", mapper.getInsuranceNumber()); //Insurance Policy
             map.add("iaddr1", mapper.getStreet());
             map.add("iaddr2", mapper.getCity());
             map.add("istate", mapper.getState());

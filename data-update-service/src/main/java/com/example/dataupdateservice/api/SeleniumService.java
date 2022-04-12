@@ -127,8 +127,13 @@ public class SeleniumService {
 
             Thread.sleep(500);
             Select dropdown = new Select(driver.findElement(By.name("ctl00$ctl00$ctl00$cphDefault$cphTemplate$cphTemplate$patientDetail$ddlGender$ddlObj")));
-            dropdown.selectByIndex(1);
+            if(mapper.getGender().equalsIgnoreCase("Male")) {
+                dropdown.selectByIndex(1);
+            }
 
+            if(mapper.getGender().equalsIgnoreCase("Female")) {
+                dropdown.selectByIndex(2);
+            }
             Thread.sleep(500);
             driver.findElement(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_txtAddressZip")).click();
             driver.findElement(By.id("cphDefault_cphTemplate_cphTemplate_patientDetail_txtAddressZip")).sendKeys(mapper.getZipCode());
