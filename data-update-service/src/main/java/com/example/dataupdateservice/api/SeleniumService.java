@@ -268,7 +268,7 @@ public class SeleniumService {
 
             LOGGER.info("Test added ");
 
-            Thread.sleep(3500);
+            Thread.sleep(2000);
             //wait.until(ExpectedConditions.visibilityOfElementLocated(By.linkText("Print Requisition")));
             String pdfLink = driver.findElement(By.linkText("Print Requisition")).getAttribute("href");
             LOGGER.info("Pdf Link " + pdfLink);
@@ -285,7 +285,7 @@ public class SeleniumService {
 
             LOGGER.info("FirstTox Form has submitted successfully");
             printDocLink.setFirstToxPdfLink(pdfLink);
-            printDocLink.setPdf(this.getLablePdf());
+            printDocLink.setPdf(this.getLabelPdf());
 
             Long endTime=System.currentTimeMillis();
             Long finalTime= (endTime-startTime);
@@ -296,7 +296,7 @@ public class SeleniumService {
         return printDocLink;
     }
 
-    public byte[] getLablePdf() {
+    public byte[] getLabelPdf() {
         byte[] pdf = new byte[0];
         try {
             Path pdfPath = Paths.get("/data/servers/services/label.pdf");
@@ -316,7 +316,7 @@ public class SeleniumService {
             Path pdfPath = Paths.get("/data/servers/services/label.pdf");
           //  Path pdfPath = Paths.get("C:/Users/admin/Desktop/data/webreq.pdf");
             pdf = Base64.getEncoder().encode(Files.readAllBytes(pdfPath));
-            LOGGER.info("pdf content" + pdf);
+            LOGGER.info("pdf content" + Arrays.toString(pdf));
 
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
