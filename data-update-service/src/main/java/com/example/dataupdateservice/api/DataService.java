@@ -1,9 +1,11 @@
 package com.example.dataupdateservice.api;
 
 import com.example.dataupdateservice.feign.FeignClientService;
-import com.example.dataupdateservice.insuranceform.InsuranceForm;
+import com.example.dataupdateservice.insurancedata.InsuranceNameList;
+import com.example.dataupdateservice.insurancedata.InsuranceNameListRepository;
+import com.example.dataupdateservice.order.PatientOrder;
 
-import com.example.dataupdateservice.insuranceform.InsuranceFormRepository;
+import com.example.dataupdateservice.order.PatientOrderRepository;
 import com.example.dataupdateservice.mappers.*;
 import com.example.dataupdateservice.order.OrderMapper;
 import com.example.dataupdateservice.response.DefaultResponse;
@@ -12,6 +14,11 @@ import com.example.dataupdateservice.user.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
+import com.google.zxing.BinaryBitmap;
+import com.google.zxing.MultiFormatReader;
+import com.google.zxing.Result;
+import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
+import com.google.zxing.common.HybridBinarizer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +29,13 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import javax.imageio.ImageIO;
+import java.io.FileInputStream;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
 
 
 @Service
@@ -34,13 +46,18 @@ public class DataService {
     @Autowired
     UserRepository userRepository;
     @Autowired
-    InsuranceFormRepository insuranceFormRepository;
+    PatientOrderRepository patientOrderRepository;
     @Autowired
     FeignClientService feignClientService;
     @Autowired
     SeleniumService seleniumService;
     @Autowired
     OrderCreateService orderCreateService;
+    @Autowired
+    InsuranceNameListRepository insuranceDataRepository;
+    @Autowired
+    QRCodeGeneratorService qrCodeGeneratorService;
+
 
     @Value("${userToken}")
     String user;
@@ -50,69 +67,89 @@ public class DataService {
     String housecall = "NO";
     String patid = "NEW";
 
-    public ResponseEntity addFormData(InsuranceFormMapper mapper) {
-        OrderResponse orderResponse = null;
+    public ResponseEntity addFormDataForFirstox(InsuranceFormMapper mapper) {
+        PrintDocLink printDocLink = new PrintDocLink();
         try {
-            InsuranceForm insuranceForm = this.mapFormData(mapper);
-           // seleniumService.processForm(mapper);
-
-            orderResponse = this.sendDataToMarques(mapper);
-            String patientId = orderResponse.getPatientId();
-            if(patientId != null) {
-                insuranceForm.setPatientId(patientId);
-                insuranceForm.setOrderNumber(orderResponse.getOrderNumber());
-                insuranceFormRepository.save(insuranceForm);
-                LOGGER.info("Patient Data has saved "+patientId);
-            }
-            else {
-                LOGGER.info("Data does not save");
-            }
-            
+            printDocLink =  seleniumService.processForm(mapper);
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
-        return new ResponseEntity<>(new DefaultResponse("Success", "Form Data has save successfully", orderResponse.getPdfUrl()), HttpStatus.OK);
-       // return new ResponseEntity<>(new DefaultResponse("Success", "Form Data has save successfully", "Selenium Testing"), HttpStatus.OK);
-
+       return new ResponseEntity<>(new DefaultResponse("Success", "Firstox Form Data has saved successfully", printDocLink), HttpStatus.OK);
     }
 
-    public InsuranceForm mapFormData(InsuranceFormMapper mapper) {
-        InsuranceForm insuranceForm = new InsuranceForm();
+    public ResponseEntity addFormDataForMarquis(InsuranceFormMapper mapper) {
+        OrderResponse orderResponse = null;
+        PrintDocLink printDocLink = new PrintDocLink();
         try {
-            insuranceForm.setFirstName(mapper.getFirstName());
-            insuranceForm.setLastName(mapper.getLastName());
-            insuranceForm.setDob(mapper.getDob());
-            insuranceForm.setGender(mapper.getGender());
-            insuranceForm.setPassport(mapper.getPassport());
-            insuranceForm.setRace(mapper.getRace());
-            insuranceForm.setEthnicity(mapper.getEthnicity());
-            insuranceForm.setMobileNumber(mapper.getMobileNumber());
-            insuranceForm.setEmail(mapper.getEmail());
-            insuranceForm.setState(mapper.getState());
-            insuranceForm.setStreet(mapper.getStreet());
-            insuranceForm.setCity(mapper.getCity());
-            insuranceForm.setZipCode(mapper.getZipCode());
-            insuranceForm.setPersonalImage(mapper.getPersonalImage().getBytes(StandardCharsets.UTF_8));
-            insuranceForm.setInsuranceIdImage(mapper.getInsuranceIdImage().getBytes(StandardCharsets.UTF_8));
+            PatientOrder patientOrder = this.mapFormData(mapper);
+            orderResponse = this.sendDataToMarques(mapper);
+            String patientId = orderResponse.getPatientId();
+            if(patientId != null) {
+                patientOrder.setPatientId(patientId);
+                patientOrder.setOrderNumber(orderResponse.getOrderNumber());
+                patientOrderRepository.save(patientOrder);
+                LOGGER.info("Patient Data has saved "+patientId);
+            }
+           printDocLink.setMarquisPdfLink(orderResponse.getPdfUrl());
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+        return new ResponseEntity<>(new DefaultResponse("Success", "Form data for Marquis has saved successfully", printDocLink), HttpStatus.OK);
+    }
+
+
+    public PatientOrder mapFormData(InsuranceFormMapper mapper) {
+        PatientOrder patientOrder = new PatientOrder();
+        try {
+            patientOrder.setFirstName(mapper.getFirstName());
+            patientOrder.setLastName(mapper.getLastName());
+            patientOrder.setDob(mapper.getDob());
+            patientOrder.setGender(mapper.getGender());
+            patientOrder.setPassport(mapper.getPassport());
+            patientOrder.setMobileNumber(mapper.getMobileNumber());
+            patientOrder.setEmail(mapper.getEmail());
+            patientOrder.setState(mapper.getState());
+            patientOrder.setStreet(mapper.getStreet());
+            patientOrder.setCity(mapper.getCity());
+            patientOrder.setZipCode(mapper.getZipCode());
+            patientOrder.setInsuranceName(mapper.getInsuranceName());
+            patientOrder.setInsuranceNumber(mapper.getInsuranceNumber());
+            patientOrder.setRace("Other");
+            patientOrder.setEthnicity("Other");
+            String uuid = UUID.randomUUID().toString();
+            patientOrder.setUuid(uuid); //Unique submission Id
+            //patientOrder.setSubmissionQRC(qrCodeGeneratorService.getQRCodeImage(uuid,250,250));
+
+            patientOrder.setCollectionTime(orderCreateService.getCurrentTimeForSpecificTz());
+            patientOrder.setCollectionDate(orderCreateService.getCurrentDateForSpecificTz());
 
             String middleName, optionalEmail, optionalNumber;
             middleName = mapper.getMiddleName();
             optionalNumber = mapper.getMobileNumber();
             optionalEmail = mapper.getOptionalEmail();
+
+            //Checking Optional fields
+            if(mapper.getInsuranceIdImage() != null) {
+                patientOrder.setInsuranceIdImage(mapper.getInsuranceIdImage().getBytes(StandardCharsets.UTF_8));
+            }
+            if(mapper.getPersonalImage() != null) {
+                patientOrder.setPersonalImage(mapper.getPersonalImage().getBytes(StandardCharsets.UTF_8));
+            }
+
             if(middleName != null) {
-                insuranceForm.setMiddleName(middleName);
+                patientOrder.setMiddleName(middleName);
             }
             if(optionalEmail != null) {
-                insuranceForm.setOptionalEmail(optionalEmail);
+                patientOrder.setOptionalEmail(optionalEmail);
             }
             if(optionalNumber != null) {
-                insuranceForm.setOptionalMobile(optionalNumber);
+                patientOrder.setOptionalMobile(optionalNumber);
             }
 
         } catch (Exception e) {
-            LOGGER.error("An error has occurred "+e);
+            LOGGER.error("An error has occurred ", e);
         }
-        return insuranceForm;
+        return patientOrder;
     }
 
     public ResponseEntity isAuthenticated(UserDto userDto) {
@@ -135,7 +172,7 @@ public class DataService {
            newPatientId = this.createPatient(json);
            LOGGER.info("New Patient Id is "+newPatientId);
            
-          if(orderCreateService.processOrderSpec(newPatientId, insuranceFormMapper)) {
+          if (orderCreateService.processOrderSpec(newPatientId, insuranceFormMapper)) {
                LOGGER.info("Order spec has created......!");
                String orderNumber = orderCreateService.processOrderTestSrc(newPatientId, insuranceFormMapper);
                LOGGER.info("Order number (Newly created): "+orderNumber);
@@ -151,7 +188,6 @@ public class DataService {
                     LOGGER.info("Pdf url"+pdfUrl);
                }
           }
-
         }
         catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
@@ -188,7 +224,6 @@ public class DataService {
                     newPatientId = patientResponseMapper.getPatid();
                 }
             } else {
-
                 if(patientResponseMapper.getSuccess().equalsIgnoreCase("true") && patientResponseMapper.getMsg().equalsIgnoreCase("OK")) {
                     newPatientId = patientResponseMapper.getPatid();
                 }
@@ -212,14 +247,14 @@ public class DataService {
             patientMapper.setDob(date);
             patientMapper.setSex(insuranceFormMapper.getGender());
             patientMapper.setAddress1(insuranceFormMapper.getStreet());
-
+            patientMapper.setPhone(insuranceFormMapper.getMobileNumber());
         } catch (Exception e) {
           LOGGER.error(e.getMessage(), e);
         }
         return patientMapper;
     }
 
-   void mapOrderObject(InsuranceFormMapper mapper){
+   void mapOrderObject(InsuranceFormMapper mapper) {
         try {
             OrderMapper order = new OrderMapper();
             order.setUser(this.user);
@@ -233,10 +268,98 @@ public class DataService {
             if(gender.equalsIgnoreCase("FEMALE")) {
                 order.setIsex("F");
             }
-
         } catch (Exception e) {
             LOGGER.info(e.getMessage(), e);
         }
    }
 
+   public ResponseEntity getDailyOrderStatsForTable() {
+       CountDto countDto = new CountDto();
+        try {
+            LocalDate today = LocalDate.now();
+            Date currentDate = java.sql.Date.valueOf(today);
+            List<PatientDataMapper> patientData = patientOrderRepository.getDailyCountData(currentDate);
+            if(patientData.size() > 0)
+            for(int i=0; i<patientData.size(); i++) {
+                patientData.get(i).setPatientNo(i+1);
+            }
+
+            return new ResponseEntity(patientData, HttpStatus.OK);
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+       return new ResponseEntity<>(countDto, HttpStatus.OK);
+   }
+
+   public ResponseEntity getDailyOrderStats() {
+        CountDto countDto = new CountDto();
+        try {
+            LocalDate today = LocalDate.now();
+            Date currentDate = java.sql.Date.valueOf(today);
+            LocalDate endDate = today.minus(1, ChronoUnit.WEEKS);
+            Date weekDate = java.sql.Date.valueOf(endDate);
+
+            List<Long> dailyCount = patientOrderRepository.getDailyCount(currentDate);
+            List<Long> weeklyCount = patientOrderRepository.getWeeklyCount(weekDate, currentDate);
+            countDto.setDailyCount(dailyCount.size());
+            countDto.setWeeklyCount(weeklyCount.size());
+
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+        return new ResponseEntity<>(countDto, HttpStatus.OK);
+   }
+
+    ResponseEntity fillInsuranceData(InsuranceDataMapper insuranceData) {
+        int size = insuranceData.getNames().size();
+        try {
+            InsuranceNameList insurance;
+            Set<InsuranceNameList> entityList = new HashSet<>();
+            for (String name:insuranceData.getNames()) {
+                insurance = new InsuranceNameList();
+                insurance.setName(name.trim());
+                insurance.setUuid(UUID.randomUUID().toString());
+                entityList.add(insurance);
+            }
+            insuranceDataRepository.saveAll(entityList);
+            LOGGER.info("Insurance data has saved, size: "+size);
+
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+        return new ResponseEntity(new DefaultResponse("Success","Insurance list has saved size: "+size,"S003"),HttpStatus.OK);
+    }
+
+    ResponseEntity getInsuranceList() {
+        List<String> insuranceList = new LinkedList<>();
+        try {
+            insuranceList = insuranceDataRepository.getInsuranceList();
+            LOGGER.info("Insurance data has saved, size: "+insuranceList.size());
+
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+        return new ResponseEntity(insuranceList, HttpStatus.OK);
+    }
+
+    ResponseEntity getQRCode() {
+        String text="2626262";
+        byte[] image;
+        String QR_CODE_IMAGE_PATH = "./src/main/resources/QRCode.png";
+
+        try {
+            image = qrCodeGeneratorService.getQRCodeImage(text,250,250);
+
+            // Generate and Save Qr Code Image in static/image folder
+            qrCodeGeneratorService.generateQRCodeImage(text,250,250, QR_CODE_IMAGE_PATH);
+            String qrcode = Base64.getEncoder().encodeToString(image);
+
+            String s = new String(image, StandardCharsets.UTF_8);
+            LOGGER.info("Text   "+text);
+
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+       return null;
+    }
 }

@@ -19,8 +19,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 
 @Service
@@ -54,9 +53,9 @@ public class OrderCreateService {
             order.setIstate(mapper.getState());
             order.setCltins("on");
             order.setCltins2("on");
-            order.setIns1("4051");
-            order.setInsname1("COVID19 HRSA Uninsured Testing");
-            order.setInsid1("111111111");
+            order.setIns1("3643");
+            order.setInsname1("MISSING INSURANCE INFO");
+            order.setInsid1(mapper.getInsuranceNumber());
             order.setRelation("SE");
             order.setBillclient("NO");
 
@@ -80,6 +79,36 @@ public class OrderCreateService {
         }
         ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
         return ow.writeValueAsString(diagnoseMapper);
+    }
+
+    public String getCurrentDateForSpecificTz() {
+        String dateString = "";
+        try {
+            Instant nowUtc = Instant.now();
+            ZoneId unitedStates = ZoneId.of("America/Chicago");
+            ZonedDateTime date = ZonedDateTime.ofInstant(nowUtc, unitedStates);
+            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MM-dd-YYYY");
+            dateString = date.format(dateFormatter);
+            LOGGER.info("Current date for order collection/etc: "+dateString);
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+        return dateString;
+    }
+
+    public String getCurrentTimeForSpecificTz() {
+        String dateString = "";
+        try {
+            Instant nowUtc = Instant.now();
+            ZoneId asiaSingapore = ZoneId.of("America/Chicago");
+            ZonedDateTime date = ZonedDateTime.ofInstant(nowUtc, asiaSingapore);
+            DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+            dateString = date.format(timeFormatter);
+            LOGGER.info("Current date for order collection/etc: "+dateString);
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+        return dateString;
     }
 
     public String getCurrentDate() {
@@ -127,7 +156,7 @@ public class OrderCreateService {
     boolean processOrderSaveTest(String patientId, String orderNumber, InsuranceFormMapper mapper) {
         try {
             MultiValueMap<String, String> map= new LinkedMultiValueMap<>();
-            map.add("billtype", "4051");
+            map.add("billtype", "3643");
             map.add("ordphys", "1588");
             map.add("ordclt", "1551");
             map.add("orderdate", this.getCurrentDate());
@@ -137,8 +166,8 @@ public class OrderCreateService {
             map.add("fasting", "N");
             map.add("json", "{\"tests\":[\"PCRW\"],\"frequency\":[\"One Time\"],\"startdt\":[\"02/18/2022\"],\"stopdt\":[\"02/18/2022\"]}");
             map.add("mode", "savetest");
-            map.add("collecttime", "15:15");
-            map.add("ordertime", "15:18");
+            map.add("collecttime", this.getCurrentTimeForSpecificTz());
+            map.add("ordertime", this.getCurrentTimeForSpecificTz());
             map.add("ordnum", orderNumber);
             map.add("ordquest_webid","NOTSET");
             map.add("housecall","NO");
@@ -166,7 +195,6 @@ public class OrderCreateService {
         return false;
     }
 
-
     boolean processOrderSpec(String patientId, InsuranceFormMapper mapper) {
         try {
             MultiValueMap<String, String> map= new LinkedMultiValueMap<>();
@@ -176,16 +204,15 @@ public class OrderCreateService {
             //map.add("json", json);
             map.add("ordernum", "NEW");
             map.add("housecall", "NO");
-            map.add("insname1", "COVID19 HRSA Uninsured Testing");
-            map.add("ins1", "4051");
+            map.add("insname1", "MISSING INSURANCE INFO");
+            map.add("ins1", "3643");
             map.add("cltins", "on");
             map.add("ifname", mapper.getFirstName());
-
             map.add("ilname", mapper.getLastName());
             map.add("idob", mapper.getDob().format(DateTimeFormatter.ofPattern("MM/dd/YYYY")));
             map.add("isex", this.getSexType(mapper.getGender()));
             map.add("outputformat", "JSON");
-            map.add("insid1", "11111111"); //Insurance Policy
+            map.add("insid1", mapper.getInsuranceNumber()); //Insurance Policy
             map.add("iaddr1", mapper.getStreet());
             map.add("iaddr2", mapper.getCity());
             map.add("istate", mapper.getState());
@@ -219,10 +246,10 @@ public class OrderCreateService {
             map.add("json", this.getMappedInsuranceToOrder(mapper));
             map.add("ordernum", "NEW");
             map.add("user", this.user);
-            map.add("collectdt", this.getCurrentDate());
-            map.add("collecttime", this.getCurrentTime());
-            map.add("orderdate", this.getCurrentDate());
-            map.add("ordertime", this.getCurrentTime());
+            map.add("collectdt",this.getCurrentDateForSpecificTz());
+            map.add("collecttime",this.getCurrentTimeForSpecificTz());
+            map.add("orderdate", this.getCurrentDateForSpecificTz());
+            map.add("ordertime", this.getCurrentTimeForSpecificTz());
             map.add("ordphys", "1588");
             map.add("ordclt", "1551");
             map.add("source", "Blood");
@@ -273,12 +300,13 @@ public class OrderCreateService {
     }
 
     String getSexType(String sexType) {
-        if(sexType.equalsIgnoreCase("MALE")) {
-            return "M";
+        String gender = "";
+        if(sexType.equalsIgnoreCase("Male")) {
+            gender =  "M";
         }
-        if(sexType.equalsIgnoreCase("FEMALE")) {
-            return "F";
+        if(sexType.equalsIgnoreCase("Female")) {
+            gender = "F";
         }
-        return "M";
+        return gender;
     }
 }
