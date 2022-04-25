@@ -252,7 +252,7 @@ public class OrderCreateService {
             map.add("ordertime", this.getCurrentTimeForSpecificTz());
             map.add("ordphys", "1588");
             map.add("ordclt", "1551");
-            map.add("source", "Blood");
+            map.add("source", "----");
 
             String response = sendRequestByRestTemplate(map, ORDER_TEST_SRC);
             if(response != "") {

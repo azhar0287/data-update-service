@@ -185,7 +185,7 @@ public class DataService {
                     orderResponse.setPdfUrl(pdfUrl);
                     orderResponse.setOrderNumber(orderNumber);
                     orderResponse.setPatientId(newPatientId);
-                    LOGGER.info("Pdf url"+pdfUrl);
+                    LOGGER.info("Pdf url: "+pdfUrl);
                }
           }
         }
