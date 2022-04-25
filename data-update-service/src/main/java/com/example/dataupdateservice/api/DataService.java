@@ -67,7 +67,7 @@ public class DataService {
     String housecall = "NO";
     String patid = "NEW";
 
-    public ResponseEntity vaddFormDataForFirstox(InsuranceFormMapper mapper) {
+    public ResponseEntity addFormDataForFirstox(InsuranceFormMapper mapper) {
         PrintDocLink printDocLink = new PrintDocLink();
         try {
             printDocLink =  seleniumService.processForm(mapper);
