@@ -36,5 +36,6 @@ public class OrderMapper {
     private String relation;
     private String oirelation;
     private String billclient;
+    private String comment;
 
 }

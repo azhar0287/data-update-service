@@ -58,6 +58,7 @@ public class OrderCreateService {
             order.setInsid1(mapper.getInsuranceNumber());
             order.setRelation("SE");
             order.setBillclient("NO");
+            order.setComment(mapper.getEmail());
 
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
