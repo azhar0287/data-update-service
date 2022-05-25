@@ -3,8 +3,10 @@ package com.example.dataupdateservice.api;
 import com.example.dataupdateservice.mappers.DiagnoseMapper;
 import com.example.dataupdateservice.mappers.InsuranceFormMapper;
 import com.example.dataupdateservice.mappers.PatientResponseMapper;
+import com.example.dataupdateservice.mappers.TestData;
 import com.example.dataupdateservice.order.OrderMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import org.apache.logging.log4j.LogManager;
@@ -21,6 +23,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.time.*;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @Service
 public class OrderCreateService {
@@ -145,7 +148,7 @@ public class OrderCreateService {
             HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
             RestTemplate restTemplate = new RestTemplate();
             ResponseEntity<String> finalResponse = restTemplate.postForEntity( url, request, String.class );
-            LOGGER.info("Res "+finalResponse.getBody());
+//            LOGGER.info("Res "+finalResponse.getBody());
             response = finalResponse.getBody();
 
         } catch (Exception e ) {
@@ -161,24 +164,63 @@ public class OrderCreateService {
             map.add("ordphys", "1588");
             map.add("ordclt", "1551");
             map.add("orderdate", this.getCurrentDate());
-            map.add("user", "HBHEHGHHHFHOHGBHBGBMAOAOGEHDGIGHGG");
+            map.add("user", "HBHEHHHGHEHMHOBHBGBMAOAOGEHDGIGHGG");
             map.add("patid", patientId);
             map.add("collectdt", this.getCurrentDate());
             map.add("fasting", "N");
-            map.add("json", "{\"tests\":[\"PCRW\"],\"frequency\":[\"One Time\"],\"startdt\":[\"02/18/2022\"],\"stopdt\":[\"02/18/2022\"]}");
+
+//            TestData testData = new TestData();
+//
+//            testData.getFrequency().add("Once Time");
+//            testData.getStartdt().add("05/21/2022");
+//            testData.getStopdt().add("05/21/2022");
+//
+//            ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+//            String json = ow.writeValueAsString(testData);
+
+            map.add("json", "{\"tests\":[\"PCRW\"],\"frequency\":[\"One Time\"],\"startdt\":[\"05/22/2022\"],\"stopdt\":[\"05/22/2022\"]}");
             map.add("mode", "savetest");
             map.add("collecttime", this.getCurrentTimeForSpecificTz());
             map.add("ordertime", this.getCurrentTimeForSpecificTz());
             map.add("ordnum", orderNumber);
-            map.add("ordquest_webid","NOTSET");
             map.add("housecall","NO");
             map.add("outputformat","JSON");
-            map.add("testcode","PCRW");
             map.add("call","N");
             map.add("fax","N");
             map.add("source","----");
-            map.add("comment",mapper.getEmail());
+//            ow =  new ObjectMapper().writer().withDefaultPrettyPrinter();
+
             String response = sendRequestByRestTemplate(map, ORDER_SAVE_TEST_URL);
+
+            LOGGER.info("Res 2: "+ response);
+            if(response != "") {
+                PatientResponseMapper responseMapper = new ObjectMapper().readValue(response, PatientResponseMapper.class);
+                if(responseMapper.getSuccess().equalsIgnoreCase("true") && responseMapper.getMsg().equalsIgnoreCase("OK")) {
+                    return true;
+                }
+            }
+            else {
+                LOGGER.info("Order has not created");
+                return false;
+            }
+
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+        return false;
+    }
+
+    boolean processOrderDiagnosisCode(String patientId, String orderNumber) {
+        try {
+            MultiValueMap<String, String> map= new LinkedMultiValueMap<>();
+            map.add("mode", "savediag");
+            map.add("patid", patientId);
+            map.add("json", this.getMappedOrderDiag());
+            map.add("outputformat", "JSON");
+            map.add("housecall", "NO");
+            map.add("ordnum", orderNumber);
+
+            String response = sendRequestByRestTemplate(map, ORDER_SAVE_DIAG_URL);
             if(response != "") {
                 PatientResponseMapper responseMapper = new ObjectMapper().readValue(response, PatientResponseMapper.class);
                 if(responseMapper.getSuccess().equalsIgnoreCase("true") && responseMapper.getMsg().equalsIgnoreCase("OK")) {
@@ -272,25 +314,25 @@ public class OrderCreateService {
         return ordNum;
     }
 
-    boolean processOrderDiagnosisCode(String patientId, String orderNumber) {
+    boolean testOrderTestSrc(String orderNumber) {
         try {
             MultiValueMap<String, String> map= new LinkedMultiValueMap<>();
-            map.add("mode", "savediag");
-            map.add("patid", patientId);
-            map.add("json", this.getMappedOrderDiag());
+            map.add("mode", "getspecsrcnum");
+            map.add("testlist", "PCRW|");
             map.add("outputformat", "JSON");
-            map.add("housecall", "NO");
+            map.add("ordquest_webid", "NOTSET");
             map.add("ordnum", orderNumber);
 
-            String response = sendRequestByRestTemplate(map, ORDER_SAVE_DIAG_URL);
+            String response = sendRequestByRestTemplate(map, ORDER_TEST_SRC);
             if(response != "") {
-                PatientResponseMapper responseMapper = new ObjectMapper().readValue(response, PatientResponseMapper.class);
-                if(responseMapper.getSuccess().equalsIgnoreCase("true") && responseMapper.getMsg().equalsIgnoreCase("OK")) {
+                PatientResponseMapper responseMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false).readValue(response, PatientResponseMapper.class);
+                if(responseMapper.getSuccess().equalsIgnoreCase("true")) {
+                    LOGGER.info("Test code has created");
                     return true;
                 }
             }
             else {
-                LOGGER.info("Order has not created");
+                LOGGER.info("Test code  has not created");
                 return false;
             }
 
@@ -299,6 +341,37 @@ public class OrderCreateService {
         }
         return false;
     }
+
+
+    boolean testOrderTestSrc2(String orderNumber) {
+        try {
+            MultiValueMap<String, String> map= new LinkedMultiValueMap<>();
+            map.add("mode", "validatetests");
+            map.add("sessionkey", this.user);
+            map.add("outputformat", "JSON");
+            map.add("ordnum", orderNumber);
+
+            String response = sendRequestByRestTemplate(map, ORDER_SAVE_TEST_URL);
+            if(response != "") {
+                PatientResponseMapper responseMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false).readValue(response, PatientResponseMapper.class);
+                if(responseMapper.getSuccess().equalsIgnoreCase("true")) {
+                    LOGGER.info("Test code has created");
+
+                    return true;
+                }
+            }
+            else {
+                LOGGER.info("Test code  has not created");
+                return false;
+            }
+
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+        return false;
+    }
+
+
 
     String getSexType(String sexType) {
         String gender = "";
