@@ -188,6 +188,7 @@ public class OrderCreateService {
             map.add("call","N");
             map.add("fax","N");
             map.add("source","----");
+            map.add("comment", mapper.getEmail());
 //            ow =  new ObjectMapper().writer().withDefaultPrettyPrinter();
 
             String response = sendRequestByRestTemplate(map, ORDER_SAVE_TEST_URL);

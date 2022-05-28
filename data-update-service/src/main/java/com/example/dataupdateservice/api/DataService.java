@@ -244,6 +244,7 @@ public class DataService {
             patientMapper.setFirstn(insuranceFormMapper.getFirstName());
             patientMapper.setLastn(insuranceFormMapper.getLastName());
             patientMapper.setCity(insuranceFormMapper.getCity());
+            patientMapper.setState(insuranceFormMapper.getState());
             patientMapper.setZip(insuranceFormMapper.getZipCode());
             String date = insuranceFormMapper.getDob().format(DateTimeFormatter.ofPattern("MM/dd/YYYY"));
             LOGGER.info("Date converted "+date);

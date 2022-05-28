@@ -1,6 +1,5 @@
 package com.example.dataupdateservice.mappers;
 
-import io.cucumber.java.mk_latn.No;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
