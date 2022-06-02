@@ -68,4 +68,6 @@ public class PatientOrder {
     private String insuranceNumber;
     private String insuranceName;
 
+    private String insuranceNameMarquis;
+    private String insuranceNumberMarquis;
 }

@@ -1,8 +1,10 @@
 package com.example.dataupdateservice.feign;
 
+
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -30,4 +32,9 @@ public interface FeignClientService {
                          @RequestParam("_dc") String _dc,
                          @RequestParam("sessionkey") String sessionkey,
                          @RequestParam("signature") String signature);
+
+
+    @PostMapping(value="/inslist.cgi", produces = MediaType.TEXT_PLAIN_VALUE, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    String getInsuranceDetails(@RequestBody MultiValueMap<String, String> body);
+
 }

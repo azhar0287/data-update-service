@@ -1,0 +1,15 @@
+package com.example.dataupdateservice.mappers;
+
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Getter @Setter @NoArgsConstructor
+public class InsuranceResponseMapper {
+    List<InsuranceInfo> inslist = new ArrayList<>();
+
+}
+

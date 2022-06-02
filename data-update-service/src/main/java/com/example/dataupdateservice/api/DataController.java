@@ -68,6 +68,10 @@ public class DataController {
         return response;
     }
 
+    /*
+     * Other APIs
+     * */
+
     @PostMapping(value = "/insuranceData/fill")
     @ResponseBody
     public ResponseEntity postInsuranceData(@RequestBody InsuranceDataMapper insuranceData) {
@@ -75,11 +79,18 @@ public class DataController {
         return dataService.fillInsuranceData(insuranceData);
     }
 
-    @GetMapping(value = "/insurance/list")
+    @GetMapping(value = "/insurance/list/firtox")
     @ResponseBody
-    public ResponseEntity postInsuranceData() {
+    public ResponseEntity getInsuranceList() {
         LOGGER.info("Request received for insurance name list");
         return dataService.getInsuranceList();
+    }
+
+    @GetMapping(value = "/insurance/list/marquis")
+    @ResponseBody
+    public ResponseEntity getInsuranceListForMarquis() {
+        LOGGER.info("Request received for insurance name list");
+        return dataService.getInsuranceListMarquis();
     }
 
     @GetMapping(value = "/form/qrcode")
