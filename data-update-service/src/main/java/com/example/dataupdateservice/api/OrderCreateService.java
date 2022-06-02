@@ -148,7 +148,6 @@ public class OrderCreateService {
             HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
             RestTemplate restTemplate = new RestTemplate();
             ResponseEntity<String> finalResponse = restTemplate.postForEntity( url, request, String.class );
-//            LOGGER.info("Res "+finalResponse.getBody());
             response = finalResponse.getBody();
 
         } catch (Exception e ) {
@@ -248,7 +247,10 @@ public class OrderCreateService {
             //map.add("json", json);
             map.add("ordernum", "NEW");
             map.add("housecall", "NO");
-            map.add("insname1", "MISSING INSURANCE INFO");
+
+            map.add("insname1", mapper.getInsuranceNameMarquis());
+            map.add("insid1", mapper.getInsuranceNumberMarquis()); //Insurance Policy
+
             map.add("ins1", "3643");
             map.add("cltins", "on");
             map.add("ifname", mapper.getFirstName());
@@ -256,7 +258,6 @@ public class OrderCreateService {
             map.add("idob", mapper.getDob().format(DateTimeFormatter.ofPattern("MM/dd/YYYY")));
             map.add("isex", this.getSexType(mapper.getGender()));
             map.add("outputformat", "JSON");
-            map.add("insid1", mapper.getInsuranceNumber()); //Insurance Policy
             map.add("iaddr1", mapper.getStreet());
             map.add("iaddr2", mapper.getCity());
             map.add("istate", mapper.getState());

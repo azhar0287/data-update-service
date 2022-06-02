@@ -4,7 +4,6 @@ package com.example.dataupdateservice.mappers;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import java.time.LocalDate;
 
 @Getter @Setter @NoArgsConstructor
@@ -35,5 +34,7 @@ public class InsuranceFormMapper {
     private String insuranceNumber;
     private String insuranceName;
     private String uuid;
+    private String insuranceNameMarquis;
+    private String insuranceNumberMarquis;
 
 }

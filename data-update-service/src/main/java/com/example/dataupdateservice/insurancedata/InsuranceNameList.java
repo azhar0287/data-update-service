@@ -17,4 +17,7 @@ public class InsuranceNameList {
     private Long id;
     private String name;
     private String uuid;
+    private String code;
+    private String type;
+
 }

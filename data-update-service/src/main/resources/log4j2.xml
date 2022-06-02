@@ -22,7 +22,7 @@
     </Appenders>
     <Loggers>
 
-        <Logger name="com.alsharqi.finance" additivity="false">
+        <Logger name=" com.example.dataupdateservice" additivity="false">
 <!--            <AppenderRef ref="appLog" />-->
              <AppenderRef ref="Console" />
         </Logger>

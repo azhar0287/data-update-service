@@ -11,6 +11,7 @@ import com.example.dataupdateservice.order.OrderMapper;
 import com.example.dataupdateservice.response.DefaultResponse;
 import com.example.dataupdateservice.user.User;
 import com.example.dataupdateservice.user.UserRepository;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
@@ -58,6 +59,7 @@ public class DataService {
     @Autowired
     QRCodeGeneratorService qrCodeGeneratorService;
 
+    public static String GET_INSURANCE_URL = "https://marquis.labsvc.net/inslist.cgi";
 
     @Value("${userToken}")
     String user;
@@ -114,6 +116,9 @@ public class DataService {
             patientOrder.setZipCode(mapper.getZipCode());
             patientOrder.setInsuranceName(mapper.getInsuranceName());
             patientOrder.setInsuranceNumber(mapper.getInsuranceNumber());
+            patientOrder.setInsuranceNameMarquis(mapper.getInsuranceNameMarquis());
+            patientOrder.setInsuranceNumberMarquis(mapper.getInsuranceNumberMarquis());
+
             patientOrder.setRace("Other");
             patientOrder.setEthnicity("Other");
             String uuid = UUID.randomUUID().toString();
@@ -317,14 +322,35 @@ public class DataService {
     ResponseEntity fillInsuranceData(InsuranceDataMapper insuranceData) {
         int size = insuranceData.getNames().size();
         try {
+            String insuranceName;
+            String planNum;
             InsuranceNameList insurance;
             Set<InsuranceNameList> entityList = new HashSet<>();
-            for (String name:insuranceData.getNames()) {
+
+            for (String code : insuranceData.getNames()) {
                 insurance = new InsuranceNameList();
-                insurance.setName(name.trim());
+
+                MultiValueMap<String, String> map= new LinkedMultiValueMap<>();
+                map.add("inscode",code);
+                map.add("mode","getinsname");
+                map.add("outputformat","JSON");
+
+                String response = feignClientService.getInsuranceDetails(map);
+                ObjectMapper objectMapper = new ObjectMapper();
+//                objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+                InsuranceResponseMapper mapper = objectMapper.readValue(response, InsuranceResponseMapper.class);
+
+                insuranceName = mapper.getInslist().get(0).getPlanname();
+                planNum = mapper.getInslist().get(0).getPlannum();
+
+                insurance.setName(insuranceName);
+                insurance.setCode(planNum);
                 insurance.setUuid(UUID.randomUUID().toString());
+                insurance.setType("Marquis");
+                LOGGER.info("Insurance Name has added: "+insuranceName+" Code: "+planNum);
                 entityList.add(insurance);
             }
+
             insuranceDataRepository.saveAll(entityList);
             LOGGER.info("Insurance data has saved, size: "+size);
 
@@ -339,6 +365,18 @@ public class DataService {
         try {
             insuranceList = insuranceDataRepository.getInsuranceList();
             LOGGER.info("Insurance data has saved, size: "+insuranceList.size());
+
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+        return new ResponseEntity(insuranceList, HttpStatus.OK);
+    }
+
+    ResponseEntity getInsuranceListMarquis() {
+        List<InsuranceListMapper> insuranceList = new LinkedList<>();
+        try {
+            insuranceList = insuranceDataRepository.getInsuranceListMarquis("Marquis");
+            LOGGER.info("Insurance list maruquis: "+insuranceList.size());
 
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
@@ -365,5 +403,21 @@ public class DataService {
             LOGGER.error(e.getMessage(), e);
         }
        return null;
+    }
+
+    public InsuranceResponseMapper getInsuranceByCode(MultiValueMap<String, String> map, String url) {
+        InsuranceResponseMapper response = new InsuranceResponseMapper();
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+            HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
+            RestTemplate restTemplate = new RestTemplate();
+            ResponseEntity<InsuranceResponseMapper> finalResponse = restTemplate.exchange(url, HttpMethod.GET, request, InsuranceResponseMapper.class );
+            response = finalResponse.getBody();
+
+        } catch (Exception e ) {
+            LOGGER.error(e.getMessage(), e);
+        }
+        return response;
     }
 }
