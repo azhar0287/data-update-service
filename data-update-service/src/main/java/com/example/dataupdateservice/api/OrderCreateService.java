@@ -168,15 +168,6 @@ public class OrderCreateService {
             map.add("collectdt", this.getCurrentDate());
             map.add("fasting", "N");
 
-//            TestData testData = new TestData();
-//
-//            testData.getFrequency().add("Once Time");
-//            testData.getStartdt().add("05/21/2022");
-//            testData.getStopdt().add("05/21/2022");
-//
-//            ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
-//            String json = ow.writeValueAsString(testData);
-
             map.add("json", "{\"tests\":[\"PCRW\"],\"frequency\":[\"One Time\"],\"startdt\":[\"05/22/2022\"],\"stopdt\":[\"05/22/2022\"]}");
             map.add("mode", "savetest");
             map.add("collecttime", this.getCurrentTimeForSpecificTz());
@@ -188,7 +179,6 @@ public class OrderCreateService {
             map.add("fax","N");
             map.add("source","----");
             map.add("comment", mapper.getEmail());
-//            ow =  new ObjectMapper().writer().withDefaultPrettyPrinter();
 
             String response = sendRequestByRestTemplate(map, ORDER_SAVE_TEST_URL);
 
