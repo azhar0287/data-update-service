@@ -159,7 +159,7 @@ public class OrderCreateService {
     boolean processOrderSaveTest(String patientId, String orderNumber, InsuranceFormMapper mapper) {
         try {
             MultiValueMap<String, String> map= new LinkedMultiValueMap<>();
-            map.add("billtype", "3643");
+            map.add("billtype", mapper.getInsuranceNumberMarquis());
             map.add("ordphys", "1588");
             map.add("ordclt", "1551");
             map.add("orderdate", this.getCurrentDate());
@@ -251,7 +251,7 @@ public class OrderCreateService {
             map.add("insname1", mapper.getInsuranceNameMarquis());
             map.add("insid1", mapper.getInsuranceNumberMarquis()); //Insurance Policy
 
-            map.add("ins1", "3643");
+            map.add("ins1", mapper.getInsuranceNumberMarquis());
             map.add("cltins", "on");
             map.add("ifname", mapper.getFirstName());
             map.add("ilname", mapper.getLastName());
@@ -284,7 +284,6 @@ public class OrderCreateService {
     String processOrderTestSrc(String patientId, InsuranceFormMapper mapper) {
         String ordNum = "";
         try {
-
             MultiValueMap<String, String> map= new LinkedMultiValueMap<>();
             map.add("mode", "save");
             map.add("patid", patientId);
@@ -315,65 +314,6 @@ public class OrderCreateService {
         }
         return ordNum;
     }
-
-    boolean testOrderTestSrc(String orderNumber) {
-        try {
-            MultiValueMap<String, String> map= new LinkedMultiValueMap<>();
-            map.add("mode", "getspecsrcnum");
-            map.add("testlist", "PCRW|");
-            map.add("outputformat", "JSON");
-            map.add("ordquest_webid", "NOTSET");
-            map.add("ordnum", orderNumber);
-
-            String response = sendRequestByRestTemplate(map, ORDER_TEST_SRC);
-            if(response != "") {
-                PatientResponseMapper responseMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false).readValue(response, PatientResponseMapper.class);
-                if(responseMapper.getSuccess().equalsIgnoreCase("true")) {
-                    LOGGER.info("Test code has created");
-                    return true;
-                }
-            }
-            else {
-                LOGGER.info("Test code  has not created");
-                return false;
-            }
-
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
-        }
-        return false;
-    }
-
-
-    boolean testOrderTestSrc2(String orderNumber) {
-        try {
-            MultiValueMap<String, String> map= new LinkedMultiValueMap<>();
-            map.add("mode", "validatetests");
-            map.add("sessionkey", this.user);
-            map.add("outputformat", "JSON");
-            map.add("ordnum", orderNumber);
-
-            String response = sendRequestByRestTemplate(map, ORDER_SAVE_TEST_URL);
-            if(response != "") {
-                PatientResponseMapper responseMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false).readValue(response, PatientResponseMapper.class);
-                if(responseMapper.getSuccess().equalsIgnoreCase("true")) {
-                    LOGGER.info("Test code has created");
-
-                    return true;
-                }
-            }
-            else {
-                LOGGER.info("Test code  has not created");
-                return false;
-            }
-
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
-        }
-        return false;
-    }
-
-
 
     String getSexType(String sexType) {
         String gender = "";
