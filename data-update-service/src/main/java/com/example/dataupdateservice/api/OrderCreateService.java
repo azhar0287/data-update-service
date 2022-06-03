@@ -239,7 +239,7 @@ public class OrderCreateService {
             map.add("housecall", "NO");
 
             map.add("insname1", mapper.getInsuranceNameMarquis());
-            map.add("insid1", mapper.getInsuranceNumberMarquis()); //Insurance Policy
+            map.add("insid1", mapper.getInsuranceNumber()); //Insurance Policy
 
             map.add("ins1", mapper.getInsuranceNumberMarquis());
             map.add("cltins", "on");
