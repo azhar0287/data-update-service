@@ -14,4 +14,9 @@ public class InsuranceListMapper {
         this.name = name;
         this.code = code;
     }
+
+    public InsuranceListMapper(String name) {
+        this.name = name;
+
+    }
 }

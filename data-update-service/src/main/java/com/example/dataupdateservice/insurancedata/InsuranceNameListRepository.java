@@ -11,10 +11,10 @@ import java.util.List;
 @Repository
 public interface InsuranceNameListRepository extends JpaRepository<InsuranceNameList, Long> {
 
-    @Query("SELECT list.name FROM InsuranceNameList list where list.type is null or list.type like '' ")
+    @Query("SELECT distinct list.name FROM InsuranceNameList list where list.type is null or list.type like '' ")
     List<String> getInsuranceList();
 
-    @Query("SELECT new com.example.dataupdateservice.mappers.InsuranceListMapper(list.name, list.code) FROM InsuranceNameList list where list.type =:type  ")
+    @Query("SELECT distinct new com.example.dataupdateservice.mappers.InsuranceListMapper(list.name, list.code) FROM InsuranceNameList list where list.type =:type  ")
     List<InsuranceListMapper> getInsuranceListMarquis(@Param("type") String type);
 
 }
